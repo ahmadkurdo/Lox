@@ -6,6 +6,7 @@
         NewLine,
         EOF,
         Comment,
+        Identifier,
         String,
         DotOrDigid,
         Digid

@@ -13,6 +13,26 @@ namespace Lox
             this.source = source;
         }
 
+        private static readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
+        {
+            { "and", TokenType.AND },
+            { "class", TokenType.CLASS },
+            { "else", TokenType.ELSE },
+            { "false", TokenType.FALSE },
+            { "for", TokenType.FOR },
+            { "fun", TokenType.FUN },
+            { "if", TokenType.IF },
+            { "nil", TokenType.NIL },
+            { "or", TokenType.OR },
+            { "print", TokenType.PRINT },
+            { "return", TokenType.RETURN },
+            { "super", TokenType.SUPER },
+            { "this", TokenType.THIS },
+            { "true", TokenType.TRUE },
+            { "var", TokenType.VAR },
+            { "while", TokenType.WHILE }
+        };
+
         public ScannerState Match(ScannerState state, int currentIndex, char currentChar, char nextChar, char prevChar, bool isLastChar) =>
             (currentChar, nextChar, expected: state.Expected) switch
             {
@@ -20,6 +40,17 @@ namespace Lox
                 ('\t', _, _) => state,
                 (' ', _, _) => state,
                 ('\n', _, _) => state with { line = state.line + 1 },
+
+                ('(', _, Expect.None) => state.AddToken(CreateToken(TokenType.RIGHT_PAREN, currentIndex, 1, state.line)),
+                (')', _, Expect.None) => state.AddToken(CreateToken(TokenType.LEFT_PAREN, currentIndex, 1, state.line)),
+                ('{', _, Expect.None) => state.AddToken(CreateToken(TokenType.RIGHT_BRACE, currentIndex, 1, state.line)),
+                ('}', _, Expect.None) => state.AddToken(CreateToken(TokenType.LEFT_BRACE, currentIndex, 1, state.line)),
+                (',', _, Expect.None) => state.AddToken(CreateToken(TokenType.COMMA, currentIndex, 1, state.line)),
+                ('.', _, Expect.None) => state.AddToken(CreateToken(TokenType.DOT, currentIndex, 1, state.line)),
+                ('+', _, Expect.None) => state.AddToken(CreateToken(TokenType.PLUS, currentIndex, 1, state.line)),
+                ('-', _, Expect.None) => state.AddToken(CreateToken(TokenType.MINUS, currentIndex, 1, state.line)),
+                (';', _, Expect.None) => state.AddToken(CreateToken(TokenType.SEMICOLON, currentIndex, 1, state.line)),
+
 
                 ('/', '/', Expect.None) => state with { Expected = Expect.Comment },
                 ('/', _, Expect.Comment) => state with { Expected = Expect.Comment },
@@ -42,12 +73,18 @@ namespace Lox
                 ('"', _, Expect.String) => state.AddToken(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
                 (_, _, Expect.String) when isLastChar => state.AddToken(CreateErrorToken("Unterminated string", state.line)),
 
-                (_, _, Expect.None) when currentChar.IsDigit() => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
-                (_, _, Expect.DotOrDigid) when currentChar.IsDigit() && nextChar.IsDigit() => state with { Expected = Expect.DotOrDigid },
+                (_, _, Expect.None) when currentChar.IsDigit() && !nextChar.IsDigit() => state.AddToken(CreateDigitToken(currentIndex, currentIndex, state.line)),
+                (_, _, Expect.None) when currentChar.IsDigit() && nextChar.IsDigit() => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
                 (_, _, Expect.DotOrDigid) when currentChar.IsDigit() && nextChar != '.' && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
                 ('.', _, Expect.DotOrDigid) when nextChar.IsDigit() => state with { Expected = Expect.Digid },
                 (_, _, Expect.Digid) when currentChar.IsDigit() && nextChar.IsDigit() => state with { Expected = Expect.Digid },
                 (_, _, Expect.Digid) when currentChar.IsDigit() && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
+
+                (_, _, Expect.None) when currentChar.IsAlpha() && !prevChar.IsAlphaNumeric() && !nextChar.IsAlphaNumeric() => state.AddToken(CreateIdentifierToken(currentIndex, currentIndex, state.line)).Reset(),
+                (_, _, Expect.None) when currentChar.IsAlpha() && !prevChar.IsAlphaNumeric() && nextChar.IsAlphaNumeric() => state with { LexemeStartIndex = currentIndex, Expected = Expect.Identifier},
+                (_, _, Expect.Identifier) when currentChar.IsAlphaNumeric() && nextChar.IsAlphaNumeric() => state with { Expected = Expect.Identifier },
+                (_, _, Expect.Identifier) when currentChar.IsAlphaNumeric() && !nextChar.IsAlphaNumeric() => state.AddToken(CreateIdentifierToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
+
 
                 _ => state
             };
@@ -81,6 +118,14 @@ namespace Lox
             string value = source.Substring(start + 1, (end - start) - 1);
             string lexeme = source.Substring(start, (end - start) + 1);
             return new(TokenType.STRING, lexeme, value, line);
+        }
+
+        public Token CreateIdentifierToken(int start, int end, int line)
+        {
+            string value = source.Substring(start, (end - start) + 1);
+            string lexeme = source.Substring(start, (end - start) + 1);
+            TokenType type = keywords.FirstOrDefault(x => x.Key == lexeme).Value;
+            return new(type, lexeme, value, line);
         }
 
         public Token CreateDigitToken(int start, int end, int line)

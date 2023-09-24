@@ -159,5 +159,71 @@ namespace Lox.Test.Extenstions
             // Null character input
             Assert.IsFalse('\0'.IsDigit());
         }
+        
+        [TestMethod]
+        public void IsAlpha_Should_ReturnTrue_ForAlphabeticCharacters()
+        {
+            // Test lowercase alphabets
+            for (char c = 'a'; c <= 'z'; c++)
+            {
+                Assert.IsTrue(c.IsAlpha());
+            }
+
+            // Test uppercase alphabets
+            for (char c = 'A'; c <= 'Z'; c++)
+            {
+                Assert.IsTrue(c.IsAlpha());
+            }
+
+            // Test underscore
+            Assert.IsTrue('_'.IsAlpha());
+        }
+
+        [TestMethod]
+        public void IsAlpha_Should_ReturnFalse_ForNonAlphabeticCharacters()
+        {
+            // Test digits
+            for (char c = '0'; c <= '9'; c++)
+            {
+                Assert.IsFalse(c.IsAlpha());
+            }
+
+            // Test non-alphabetic characters
+            Assert.IsFalse(' '.IsAlpha());
+            Assert.IsFalse('$'.IsAlpha());
+            Assert.IsFalse('%'.IsAlpha());
+            Assert.IsFalse('*'.IsAlpha());
+            // Add more test cases for non-alphabetic characters as needed
+        }
+
+        [TestMethod]
+        public void IsAlphaNumeric_Should_ReturnTrue_ForAlphanumericCharacters()
+        {
+            // Test alphabets
+            for (char c = 'a'; c <= 'z'; c++)
+            {
+                Assert.IsTrue(c.IsAlphaNumeric());
+            }
+
+            // Test digits
+            for (char c = '0'; c <= '9'; c++)
+            {
+                Assert.IsTrue(c.IsAlphaNumeric());
+            }
+
+            // Test underscore
+            Assert.IsTrue('_'.IsAlphaNumeric());
+        }
+
+        [TestMethod]
+        public void IsAlphaNumeric_Should_ReturnFalse_ForNonAlphanumericCharacters()
+        {
+            // Test non-alphanumeric characters
+            Assert.IsFalse(' '.IsAlphaNumeric());
+            Assert.IsFalse('$'.IsAlphaNumeric());
+            Assert.IsFalse('%'.IsAlphaNumeric());
+            Assert.IsFalse('*'.IsAlphaNumeric());
+            // Add more test cases for non-alphanumeric characters as needed
+        }
     }
 }

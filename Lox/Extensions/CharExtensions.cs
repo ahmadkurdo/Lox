@@ -23,5 +23,12 @@ namespace Lox.Extensions
                 '*' => true,
                 _ => false
             };
+
+        public static bool IsAlpha(this char c) =>
+            (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            c == '_';
+
+        public static bool IsAlphaNumeric(this char c) => c.IsDigit() || c.IsAlpha();
     }
 }

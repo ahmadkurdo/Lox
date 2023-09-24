@@ -2,6 +2,9 @@
 {
     public enum TokenType
     {
+        // Literals.
+        IDENTIFIER, STRING, NUMBER,
+
         // Single-character tokens.
         LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
         COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
@@ -12,8 +15,6 @@
         GREATER, GREATER_EQUAL,
         LESS, LESS_EQUAL,
         
-        // Literals.
-        IDENTIFIER, STRING, NUMBER,
         
         // Keywords.
         AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
