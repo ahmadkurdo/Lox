@@ -36,16 +36,16 @@ namespace Lox
                 ('=', _, Expect.None) when !IsTokenType(prevChar) && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
 
                 ('"', _, Expect.None) when nextChar != '"' && !isLastChar => state with { LexemeStartIndex = currentIndex, Expected = Expect.String },
-                ('"', '"', Expect.String) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateToken(TokenType.STRING, currentIndex, 2, state.line)), Expected = Expect.None },
-                ('"', _, Expect.String) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+                ('"', '"', Expect.String) => state.AddToken(CreateToken(TokenType.STRING, currentIndex, 2, state.line)).Reset(),
+                ('"', _, Expect.String) => state.AddToken(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
                 (_, _, Expect.String) when isLastChar => state.AddToken(CreateErrorToken("Unterminated string", state.line)),
 
                 (_, _, Expect.None) when IsDigit(currentChar) => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
                 (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.DotOrDigid },
-                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && nextChar != '.' && (!IsDigit(nextChar) || isLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && nextChar != '.' && (!IsDigit(nextChar) || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
                 ('.', _, Expect.DotOrDigid) when IsDigit(nextChar) => state with { Expected = Expect.Digid },
                 (_, _, Expect.Digid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.Digid },
-                (_, _, Expect.Digid) when IsDigit(currentChar) && (!IsDigit(nextChar) || isLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+                (_, _, Expect.Digid) when IsDigit(currentChar) && (!IsDigit(nextChar) || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
 
                 _ => state
             };

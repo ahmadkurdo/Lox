@@ -12,7 +12,7 @@ namespace Lox.Models
 
         public ScannerState AddToken(Token token) => this with { Tokens = Tokens.Append(token) };
 
-        public ScannerState ResetLexemeStart => this with { LexemeStartIndex = 0 };
+        public ScannerState Reset() => this with { LexemeStartIndex = 0, Expected = Expect.None };
     
     }
 }
