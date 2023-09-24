@@ -40,7 +40,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_StringAndNumberLiteral_ReturnsCorrectToken()
         {
-            string source = "12343\"Ahmed1233\"\n23213\"HelloWorld!\"\n123.5\"Test\"";
+            string source = "12343\"Ahmed1233\"//comment should be ignored\n23213\"HelloWorld!\"\n123.5\"Test\"!=<=<>=>";
             var scanner = new ScannerV2(source);
 
             List<Token> tokens = scanner.Scan();
@@ -74,6 +74,26 @@ namespace Lox.Test
             Assert.AreEqual("Test", tokens[5].Literal);
             Assert.AreEqual(TokenType.STRING, tokens[5].Type);
             Assert.AreEqual(3, tokens[5].Line);
+
+            Assert.AreEqual("!=", tokens[6].Lexeme);
+            Assert.AreEqual(TokenType.BANG_EQUAL, tokens[6].Type);
+            Assert.AreEqual(3, tokens[6].Line);
+
+            Assert.AreEqual("<=", tokens[7].Lexeme);
+            Assert.AreEqual(TokenType.LESS_EQUAL, tokens[7].Type);
+            Assert.AreEqual(3, tokens[7].Line);
+
+            Assert.AreEqual("<", tokens[8].Lexeme);
+            Assert.AreEqual(TokenType.LESS, tokens[8].Type);
+            Assert.AreEqual(3, tokens[8].Line);
+
+            Assert.AreEqual(">=", tokens[9].Lexeme);
+            Assert.AreEqual(TokenType.GREATER_EQUAL, tokens[9].Type);
+            Assert.AreEqual(3, tokens[9].Line);
+
+            Assert.AreEqual(">", tokens[10].Lexeme);
+            Assert.AreEqual(TokenType.GREATER, tokens[10].Type);
+            Assert.AreEqual(3, tokens[10].Line);
         }
 
         [TestMethod]
