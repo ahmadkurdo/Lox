@@ -1,12 +1,17 @@
 ﻿using Lox.Extensions;
-using Lox.Models;
 using System.Globalization;
 
 namespace Lox
 {
     public class Scanner
     {
+
         private readonly string source;
+        private int line = 1;
+        private int start = 0;
+        private int current = 0;
+
+        private readonly List<Token> tokens = new();
 
         public Scanner(string source)
         {
@@ -33,111 +38,168 @@ namespace Lox
             { "while", TokenType.WHILE }
         };
 
-        public ScannerState Match(ScannerState state, int currentIndex, char currentChar, char nextChar, char prevChar, bool isLastChar) =>
-            (currentChar, nextChar, expected: state.Expected) switch
-            {
-                ('\r', _, _) => state,
-                ('\t', _, _) => state,
-                (' ', _, _) => state,
-                ('\n', _, _) => state with { line = state.line + 1 },
-
-                ('(', _, Expect.None) => state.AddToken(CreateToken(TokenType.RIGHT_PAREN, currentIndex, 1, state.line)),
-                (')', _, Expect.None) => state.AddToken(CreateToken(TokenType.LEFT_PAREN, currentIndex, 1, state.line)),
-                ('{', _, Expect.None) => state.AddToken(CreateToken(TokenType.RIGHT_BRACE, currentIndex, 1, state.line)),
-                ('}', _, Expect.None) => state.AddToken(CreateToken(TokenType.LEFT_BRACE, currentIndex, 1, state.line)),
-                (',', _, Expect.None) => state.AddToken(CreateToken(TokenType.COMMA, currentIndex, 1, state.line)),
-                ('.', _, Expect.None) => state.AddToken(CreateToken(TokenType.DOT, currentIndex, 1, state.line)),
-                ('+', _, Expect.None) => state.AddToken(CreateToken(TokenType.PLUS, currentIndex, 1, state.line)),
-                ('-', _, Expect.None) => state.AddToken(CreateToken(TokenType.MINUS, currentIndex, 1, state.line)),
-                (';', _, Expect.None) => state.AddToken(CreateToken(TokenType.SEMICOLON, currentIndex, 1, state.line)),
-
-
-                ('/', '/', Expect.None) => state with { Expected = Expect.Comment },
-                ('/', _, Expect.Comment) => state with { Expected = Expect.Comment },
-                (_, _, Expect.Comment) when nextChar == '\n' || isLastChar => state with { Expected = Expect.None },
-                ('/', _, Expect.None) when nextChar != '/' => state.AddToken(CreateToken(TokenType.SLASH, currentIndex, 1, state.line)),
-
-                ('!', '=', Expect.None) => state.AddToken(CreateToken(TokenType.BANG_EQUAL, currentIndex, 2, state.line)),
-                ('>', '=', Expect.None) => state.AddToken(CreateToken(TokenType.GREATER_EQUAL, currentIndex, 2, state.line)),
-                ('<', '=', Expect.None) => state.AddToken(CreateToken(TokenType.LESS_EQUAL, currentIndex, 2, state.line)),
-                ('=', '=', Expect.None) when !prevChar.IsOperator() => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
-
-                ('!', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.BANG, currentIndex, 1, state.line)),
-                ('>', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.GREATER, currentIndex, 1, state.line)),
-                ('<', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.LESS, currentIndex, 1, state.line)),
-                //To prevent ===
-                ('=', _, Expect.None) when !prevChar.IsOperator() && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
-
-                ('"', _, Expect.None) when nextChar != '"' && !isLastChar => state with { LexemeStartIndex = currentIndex, Expected = Expect.String },
-                ('"', '"', Expect.String) => state.AddToken(CreateToken(TokenType.STRING, currentIndex, 2, state.line)).Reset(),
-                ('"', _, Expect.String) => state.AddToken(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
-                (_, _, Expect.String) when isLastChar => state.AddToken(CreateErrorToken("Unterminated string", state.line)),
-
-                (_, _, Expect.None) when currentChar.IsDigit() && !nextChar.IsDigit() => state.AddToken(CreateDigitToken(currentIndex, currentIndex, state.line)),
-                (_, _, Expect.None) when currentChar.IsDigit() && nextChar.IsDigit() => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
-                (_, _, Expect.DotOrDigid) when currentChar.IsDigit() && nextChar != '.' && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
-                ('.', _, Expect.DotOrDigid) when nextChar.IsDigit() => state with { Expected = Expect.Digid },
-                (_, _, Expect.Digid) when currentChar.IsDigit() && nextChar.IsDigit() => state with { Expected = Expect.Digid },
-                (_, _, Expect.Digid) when currentChar.IsDigit() && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
-
-                (_, _, Expect.None) when currentChar.IsAlpha() && !prevChar.IsAlphaNumeric() && !nextChar.IsAlphaNumeric() => state.AddToken(CreateIdentifierToken(currentIndex, currentIndex, state.line)).Reset(),
-                (_, _, Expect.None) when currentChar.IsAlpha() && !prevChar.IsAlphaNumeric() && nextChar.IsAlphaNumeric() => state with { LexemeStartIndex = currentIndex, Expected = Expect.Identifier},
-                (_, _, Expect.Identifier) when currentChar.IsAlphaNumeric() && nextChar.IsAlphaNumeric() => state with { Expected = Expect.Identifier },
-                (_, _, Expect.Identifier) when currentChar.IsAlphaNumeric() && !nextChar.IsAlphaNumeric() => state.AddToken(CreateIdentifierToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
-
-
-                _ => state.AddToken(CreateErrorToken("Unexpected character", state.line))
-            };
-
         public List<Token> Scan()
         {
-            var tokens = new List<Token>();
+            while (!IsEndOfFile())
+            {
+                start = current;
+                Match(GetNext());
+            }
+            tokens.Add(new Token(TokenType.EOF, "", null, line));
+            return tokens;
+        }
 
-            ScannerState state = source
-                .Select((character, index) => (character, index))
-                .Aggregate(new ScannerState(), (state, cursor) =>
+        public bool IsEndOfFile() => current >= source.Length;
+
+        public bool IsEndOfFile(int cursor) => cursor >= source.Length;
+
+        private void Match(char c)
+        {
+            switch (c)
+            {
+                case '(':
+                    AddToken(TokenType.LEFT_PAREN);
+                    break;
+                case ')':
+                    AddToken(TokenType.RIGHT_PAREN);
+                    break;
+                case '{':
+                    AddToken(TokenType.LEFT_BRACE);
+                    break;
+                case '}':
+                    AddToken(TokenType.RIGHT_BRACE);
+                    break;
+                case '.':
+                    AddToken(TokenType.DOT);
+                    break;
+                case ',':
+                    AddToken(TokenType.COMMA);
+                    break;
+                case ';':
+                    AddToken(TokenType.SEMICOLON);
+                    break;
+                case '+':
+                    AddToken(TokenType.PLUS);
+                    break;
+                case '-':
+                    AddToken(TokenType.MINUS);
+                    break;
+                case '*':
+                    AddToken(TokenType.STAR);
+                    break;
+                case '!':
+                    AddToken(IsSameAsNext('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+                    break;
+                case '=':
+                    AddToken(IsSameAsNext('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+                    break;
+                case '<':
+                    AddToken(IsSameAsNext('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+                    break;
+                case '>':
+                    AddToken(IsSameAsNext('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+                    break;
+                case '/':
+                    if (IsSameAsNext('/'))
+                    {
+                        while (Peek() != '\n' && !IsEndOfFile())
+                            GetNext();
+                    }
+                    else
+                    {
+                        AddToken(TokenType.SLASH);
+                    }
+                    break;
+                case ' ':
+                case '\r':
+                case '\t':
+                    break;
+                case '\n':
+                    line++;
+                    break;
+                case '"':
+                    String();
+                    break;
+                default:
+                    if (isDigit(c))
+                        Number();
+                    else if (c.IsAlpha())
+                        Identifier();
+                    else
+                        Program.Error(line, "Unexpected character.");
+                    break;
+            }
+        }
+        public void Identifier() 
+        {
+            while (Peek().IsAlphaNumeric())
+                GetNext();
+
+            string text = source.substring(start, current);
+            TokenType type = keywords.FirstOrDefault(x => x.Key == text).Value;
+            AddToken(type);
+        }
+        public void String()
+        {
+            while (Peek() != '"' && !IsEndOfFile())
+            {
+                if (Peek() == '\n') line++;
+                GetNext();
+
+                if (IsEndOfFile())
                 {
-                    bool isLast = cursor.index >= source.Length -1;
-                    bool isFirst = cursor.index == 0;
-                    char next = !isLast ? source[cursor.index + 1] : default;
-                    char prev = !isFirst ? source[cursor.index - 1] : default;
-                    return Match(state, cursor.index, cursor.character, next, prev, isLast);
-                });
+                    Program.Error(line, "Unterminated string");
+                    return;
+                }
+            }
 
-            return state.Tokens.Append(new Token(TokenType.EOF, "", null, state.line)).ToList();
+            // The closing ".
+            GetNext();
+            string value = source.substring(start + 1, current - 1);
+            AddToken(TokenType.STRING, value);
+
         }
 
-        public Token CreateToken(TokenType type, int start, int end, int line ,object? literal = null)
+        public void AddToken(TokenType type) => AddToken(type, null);
+
+        public void AddToken(TokenType type, object? literal = null)
         {
-            string lexeme = source.Substring(start, end);
-            return new(type, lexeme, literal, line);
+            string lexeme = source.substring(start, current);
+            tokens.Add(new(type, lexeme, literal, line));
+
         }
 
-        public Token CreateStringToken(int start, int end, int line)
+        public bool isDigit(char c) => c >= '0' && c <= '9';
+
+        private void Number()
         {
-            string value = source.Substring(start + 1, (end - start) - 1);
-            string lexeme = source.Substring(start, (end - start) + 1);
-            return new(TokenType.STRING, lexeme, value, line);
+            while (isDigit(Peek()))
+                GetNext();
+            if (Peek() == '.' && isDigit(PeekNext()))
+                GetNext();
+            while (isDigit(Peek()))
+                GetNext();
+
+            AddToken(TokenType.NUMBER, Double.Parse(source.substring(start, current), CultureInfo.InvariantCulture));
         }
 
-        public Token CreateIdentifierToken(int start, int end, int line)
-        {
-            string value = source.Substring(start, (end - start) + 1);
-            string lexeme = source.Substring(start, (end - start) + 1);
-            TokenType type = keywords.FirstOrDefault(x => x.Key == lexeme).Value;
-            return new(type, lexeme, value, line);
-        }
 
-        public Token CreateDigitToken(int start, int end, int line)
-        {
-            double value = double.Parse(source.Substring(start, (end - start) + 1), CultureInfo.InvariantCulture);
-            string lexeme = source.Substring(start, (end - start) + 1);
-            return new(TokenType.NUMBER, lexeme, value, line);
-        }
+        public char GetNext() => source[current++];
 
-        public Token CreateErrorToken(string error, int line)
+        public char Peek() => IsEndOfFile() ? '\0' : source[current];
+
+        public char PeekNext() => IsEndOfFile(current + 1) ? '\0' : source[current + 1];
+
+
+        public bool IsSameAsNext(char c)
         {
-            return new(TokenType.Error, null, error, line);
+            if (!IsEndOfFile() && source[current] == c)
+            {
+                current++;
+                return true;
+            }
+
+            return false;
         }
     }
 }

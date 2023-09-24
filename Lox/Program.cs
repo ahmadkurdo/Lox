@@ -29,15 +29,15 @@ class Program
     {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.Scan();
+        foreach (Token token in tokens)
+        {
+            Console.WriteLine(token);
+        }
         if (tokens.Any(token => token.Type == TokenType.Error)) 
         {
             var error = tokens.First(toke => toke.Type == TokenType.Error);
             Error(error.Line, error.Literal.ToString());
             return;
-        }
-        foreach (Token token in tokens)
-        {
-            Console.WriteLine(token);
         }
     }
 

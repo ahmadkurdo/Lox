@@ -14,15 +14,13 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(6, tokens.Count);
+            Assert.AreEqual(7, tokens.Count);
 
             Assert.AreEqual("var", tokens[0].Lexeme);
-            Assert.AreEqual("var", tokens[0].Literal);
             Assert.AreEqual(TokenType.VAR, tokens[0].Type);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("name", tokens[1].Lexeme);
-            Assert.AreEqual("name", tokens[1].Literal);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[1].Type);
             Assert.AreEqual(1, tokens[1].Line);
 
@@ -53,10 +51,10 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(7, tokens.Count);
+            Assert.AreEqual(8, tokens.Count);
 
             Assert.AreEqual("(", tokens[0].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[0].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[0].Type);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("1", tokens[1].Lexeme);
@@ -74,7 +72,7 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[3].Line);
 
             Assert.AreEqual(")", tokens[4].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[4].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[4].Type);
             Assert.AreEqual(1, tokens[4].Line);
 
             Assert.AreEqual("-", tokens[5].Lexeme);
@@ -95,14 +93,14 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(9, tokens.Count);
+            Assert.AreEqual(10, tokens.Count);
 
             Assert.AreEqual("if", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.IF, tokens[0].Type);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("(", tokens[1].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[1].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[1].Type);
             Assert.AreEqual(1, tokens[1].Line);
 
             Assert.AreEqual("true", tokens[2].Lexeme);
@@ -110,11 +108,11 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[2].Line);
 
             Assert.AreEqual(")", tokens[3].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[3].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[3].Type);
             Assert.AreEqual(1, tokens[3].Line);
 
             Assert.AreEqual("{", tokens[4].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[4].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[4].Type);
             Assert.AreEqual(1, tokens[4].Line);
 
             Assert.AreEqual("return", tokens[5].Lexeme);
@@ -127,31 +125,12 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[6].Line);
 
             Assert.AreEqual("}", tokens[7].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[7].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[7].Type);
             Assert.AreEqual(1, tokens[7].Line);
 
             Assert.AreEqual(";", tokens[8].Lexeme);
             Assert.AreEqual(TokenType.SEMICOLON, tokens[8].Type);
             Assert.AreEqual(1, tokens[8].Line);
-        }
-
-
-        [TestMethod]
-        public void CreateStringToken_Should_TokenFromCorrectPositionInSource()
-        {
-            string source = "12343\"Ahmed1233\"23213\"HelloWorld!\"432234\"Test\"";
-            var scanner = new Scanner(source);
-
-            Token ahmedToken = scanner.CreateStringToken(5,15,1);
-            Token helloWorldToken = scanner.CreateStringToken(21, 33, 1);
-            Token testToken = scanner.CreateStringToken(40, 45, 1);
-            
-            Assert.AreEqual("\"Ahmed1233\"", ahmedToken.Lexeme);
-            Assert.AreEqual("Ahmed1233", ahmedToken.Literal.ToString());
-            Assert.AreEqual("\"HelloWorld!\"", helloWorldToken.Lexeme);
-            Assert.AreEqual("HelloWorld!", helloWorldToken.Literal.ToString());
-            Assert.AreEqual("\"Test\"", testToken.Lexeme);
-            Assert.AreEqual("Test", testToken.Literal.ToString());
         }
 
         [TestMethod]
@@ -165,7 +144,7 @@ namespace Lox.Test
             List<Token> tokens = scanner.Scan();
 
             // Assert
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(2, tokens.Count);
 
             // Token 0: "Hello, world!"
             Assert.AreEqual("\"Hello, world!\"", tokens[0].Lexeme);
@@ -174,19 +153,6 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[0].Line);
         }
     
-
-        [TestMethod]
-        public void CreateDigidToken_Should_TokenFromCorrectPositionInSource()
-        {
-            string source = "123.5";
-            var scanner = new Scanner(source);
-
-            Token res = scanner.CreateDigitToken(0, 4, 1);
-
-            Assert.AreEqual("123.5", res.Lexeme);
-            Assert.AreEqual(123.5D, res.Literal);
-        }
-
         [TestMethod]
         public void Scan_CombinationOfLiteralsAndOperators_ReturnsCorrectToken()
         {
@@ -258,7 +224,7 @@ namespace Lox.Test
             Assert.AreEqual(123.5D, tokens[0].Literal);
             Assert.AreEqual(TokenType.NUMBER, tokens[0].Type);
             Assert.AreEqual(2, tokens[0].Line);
-            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual(2, tokens.Count);
         }
 
 
@@ -271,7 +237,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(3, tokens.Count);
             Assert.AreEqual("\"Hello, World!\"", tokens[0].Lexeme);
             Assert.AreEqual("Hello, World!", tokens[0].Literal);
             Assert.AreEqual(TokenType.STRING, tokens[0].Type);
@@ -290,7 +256,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(4, tokens.Count);
 
             Assert.AreEqual("!=", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.BANG_EQUAL, tokens[0].Type);
@@ -309,7 +275,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(4, tokens.Count);
 
             Assert.AreEqual("!", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.BANG, tokens[0].Type);
@@ -328,7 +294,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(4, tokens.Count);
 
             Assert.AreEqual("=", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.EQUAL, tokens[0].Type);
@@ -347,7 +313,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(5, tokens.Count);
 
             Assert.AreEqual("==", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.EQUAL_EQUAL, tokens[0].Type);
@@ -366,7 +332,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING || token.Type == TokenType.EOF));
         }
 
         [TestMethod]
@@ -377,7 +343,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(4, tokens.Count);
 
             Assert.AreEqual("<", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.LESS, tokens[0].Type);
@@ -396,7 +362,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(5, tokens.Count);
 
             Assert.AreEqual("<=", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.LESS_EQUAL, tokens[0].Type);
@@ -415,7 +381,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING || token.Type == TokenType.EOF));
         }
 
         [TestMethod]
@@ -426,7 +392,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING || token.Type == TokenType.EOF));
         }
 
         [TestMethod]
@@ -437,7 +403,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(0, tokens.Count);
+            Assert.AreEqual(1, tokens.Count);
         }
 
         [TestMethod]
@@ -448,7 +414,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(0, tokens.Count);
+            Assert.AreEqual(1, tokens.Count);
         }
 
         [TestMethod]
@@ -459,11 +425,11 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(6, tokens.Count);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[0].Type);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[1].Type);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[2].Type);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[3].Type);
+            Assert.AreEqual(7, tokens.Count);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[0].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[1].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[2].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[3].Type);
             Assert.AreEqual(TokenType.COMMA, tokens[4].Type);
             Assert.AreEqual(TokenType.SEMICOLON, tokens[5].Type);
         }
@@ -475,7 +441,7 @@ namespace Lox.Test
             List<Token> tokens = scanner.Scan();
 
             Assert.IsNotNull(tokens);
-            Assert.AreEqual(5, tokens.Count);
+            Assert.AreEqual(6, tokens.Count);
             Assert.AreEqual(TokenType.CLASS, tokens[0].Type);
             Assert.AreEqual(TokenType.FUN, tokens[1].Type);
             Assert.AreEqual(TokenType.VAR, tokens[2].Type);
@@ -484,15 +450,14 @@ namespace Lox.Test
         }
 
         [TestMethod]
-        public void Scan_Should_ReturnErrorTokenForUnterminatedString()
+        public void Scan_Should_ReturnEOFTokenForUnterminatedString()
         {
             var scanner = new Scanner("\"Unterminated string");
             List<Token> tokens = scanner.Scan();
 
             Assert.IsNotNull(tokens);
             Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(TokenType.Error, tokens[0].Type);
-            Assert.AreEqual("Unterminated string", tokens[0].Literal);
+            Assert.AreEqual(TokenType.EOF, tokens[0].Type);
         }
 
         [TestMethod]
@@ -501,16 +466,14 @@ namespace Lox.Test
             var scanner = new Scanner("true false");
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(3, tokens.Count);
 
             Assert.AreEqual("true", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.TRUE, tokens[0].Type);
-            Assert.AreEqual("true", tokens[0].Literal);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("false", tokens[1].Lexeme);
             Assert.AreEqual(TokenType.FALSE, tokens[1].Type);
-            Assert.AreEqual("false", tokens[1].Literal);
             Assert.AreEqual(1, tokens[1].Line);
         }
 
@@ -519,7 +482,7 @@ namespace Lox.Test
         {
             var scanner = new Scanner("int x = 42; // This is a comment");
             List<Token> tokens = scanner.Scan();
-            Assert.AreEqual(5, tokens.Count);
+            Assert.AreEqual(6, tokens.Count);
         }
 
         [TestMethod]
@@ -528,24 +491,22 @@ namespace Lox.Test
             var scanner = new Scanner("for (int i = 0; i < 5; i = i + 1) { print(i); }");
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(24, tokens.Count);
+            Assert.AreEqual(25, tokens.Count);
 
             Assert.AreEqual("for", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.FOR, tokens[0].Type);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("(", tokens[1].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[1].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[1].Type);
             Assert.AreEqual(1, tokens[1].Line);
 
             Assert.AreEqual("int", tokens[2].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[2].Type);
-            Assert.AreEqual("int", tokens[2].Literal);
             Assert.AreEqual(1, tokens[2].Line);
 
             Assert.AreEqual("i", tokens[3].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[3].Type);
-            Assert.AreEqual("i", tokens[3].Literal);
             Assert.AreEqual(1, tokens[3].Line);
 
             Assert.AreEqual("=", tokens[4].Lexeme);
@@ -562,7 +523,6 @@ namespace Lox.Test
 
             Assert.AreEqual("i", tokens[7].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[7].Type);
-            Assert.AreEqual("i", tokens[7].Literal);
             Assert.AreEqual(1, tokens[7].Line);
 
             Assert.AreEqual("<", tokens[8].Lexeme);
@@ -579,7 +539,6 @@ namespace Lox.Test
 
             Assert.AreEqual("i", tokens[11].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[11].Type);
-            Assert.AreEqual("i", tokens[11].Literal);
             Assert.AreEqual(1, tokens[11].Line);
 
             Assert.AreEqual("=", tokens[12].Lexeme);
@@ -588,7 +547,6 @@ namespace Lox.Test
 
             Assert.AreEqual("i", tokens[13].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[13].Type);
-            Assert.AreEqual("i", tokens[13].Literal);
             Assert.AreEqual(1, tokens[13].Line);
 
             Assert.AreEqual("+", tokens[14].Lexeme);
@@ -600,11 +558,11 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[15].Line);
 
             Assert.AreEqual(")", tokens[16].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[16].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[16].Type);
             Assert.AreEqual(1, tokens[16].Line);
 
             Assert.AreEqual("{", tokens[17].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[17].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[17].Type);
             Assert.AreEqual(1, tokens[17].Line);
 
             Assert.AreEqual("print", tokens[18].Lexeme);
@@ -612,7 +570,7 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[18].Line);
 
             Assert.AreEqual("(", tokens[19].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[19].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[19].Type);
             Assert.AreEqual(1, tokens[19].Line);
 
 
@@ -621,7 +579,7 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[20].Line);
 
             Assert.AreEqual(")", tokens[21].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[21].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[21].Type);
             Assert.AreEqual(1, tokens[21].Line);
 
             Assert.AreEqual(";", tokens[22].Lexeme);
@@ -629,7 +587,7 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[22].Line);
 
             Assert.AreEqual("}", tokens[23].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[23].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[23].Type);
             Assert.AreEqual(1, tokens[23].Line);
         }
 
@@ -644,7 +602,7 @@ namespace Lox.Test
             List<Token> tokens = scanner.Scan();
 
             // Assert
-            Assert.AreEqual(13, tokens.Count);
+            Assert.AreEqual(14, tokens.Count);
 
             // Token 0: if
             Assert.AreEqual("if", tokens[0].Lexeme);
@@ -653,29 +611,27 @@ namespace Lox.Test
 
             // Token 1: (
             Assert.AreEqual("(", tokens[1].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[1].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[1].Type);
             Assert.AreEqual(1, tokens[1].Line);
 
             // Token 2: condition
             Assert.AreEqual("condition", tokens[2].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[2].Type);
-            Assert.AreEqual("condition", tokens[2].Literal);
             Assert.AreEqual(1, tokens[2].Line);
 
             // Token 3: )
             Assert.AreEqual(")", tokens[3].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[3].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[3].Type);
             Assert.AreEqual(1, tokens[3].Line);
 
             // Token 4: {
             Assert.AreEqual("{", tokens[4].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[4].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[4].Type);
             Assert.AreEqual(1, tokens[4].Line);
 
             // Token 5: statement1
             Assert.AreEqual("statement1", tokens[5].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[5].Type);
-            Assert.AreEqual("statement1", tokens[5].Literal);
             Assert.AreEqual(1, tokens[5].Line);
 
             // Token 6: ;
@@ -685,7 +641,7 @@ namespace Lox.Test
 
             // Token 7: }
             Assert.AreEqual("}", tokens[7].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[7].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[7].Type);
             Assert.AreEqual(1, tokens[7].Line);
 
             // Token 8: else
@@ -695,13 +651,12 @@ namespace Lox.Test
 
             // Token 9: {
             Assert.AreEqual("{", tokens[9].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[9].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[9].Type);
             Assert.AreEqual(1, tokens[9].Line);
 
             // Token 10: statement2
             Assert.AreEqual("statement2", tokens[10].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[10].Type);
-            Assert.AreEqual("statement2", tokens[10].Literal);
             Assert.AreEqual(1, tokens[10].Line);
 
             // Token 11: ;
@@ -711,7 +666,7 @@ namespace Lox.Test
 
             // Token 12: }
             Assert.AreEqual("}", tokens[12].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[12].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[12].Type);
             Assert.AreEqual(1, tokens[12].Line);
         }
 
@@ -722,19 +677,18 @@ namespace Lox.Test
             var scanner = new Scanner("while (x < 10) { x = x + 1; }");
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(14, tokens.Count);
+            Assert.AreEqual(15, tokens.Count);
 
             Assert.AreEqual("while", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.WHILE, tokens[0].Type);
             Assert.AreEqual(1, tokens[0].Line);
 
             Assert.AreEqual("(", tokens[1].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[1].Type);
+            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[1].Type);
             Assert.AreEqual(1, tokens[1].Line);
 
             Assert.AreEqual("x", tokens[2].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[2].Type);
-            Assert.AreEqual("x", tokens[2].Literal);
             Assert.AreEqual(1, tokens[2].Line);
 
             Assert.AreEqual("<", tokens[3].Lexeme);
@@ -746,16 +700,15 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[4].Line);
 
             Assert.AreEqual(")", tokens[5].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_PAREN, tokens[5].Type);
+            Assert.AreEqual(TokenType.RIGHT_PAREN, tokens[5].Type);
             Assert.AreEqual(1, tokens[5].Line);
 
             Assert.AreEqual("{", tokens[6].Lexeme);
-            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[6].Type);
+            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[6].Type);
             Assert.AreEqual(1, tokens[6].Line);
 
             Assert.AreEqual("x", tokens[7].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[7].Type);
-            Assert.AreEqual("x", tokens[7].Literal);
             Assert.AreEqual(1, tokens[7].Line);
 
             Assert.AreEqual("=", tokens[8].Lexeme);
@@ -764,7 +717,6 @@ namespace Lox.Test
 
             Assert.AreEqual("x", tokens[9].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[9].Type);
-            Assert.AreEqual("x", tokens[9].Literal);
             Assert.AreEqual(1, tokens[9].Line);
 
             Assert.AreEqual("+", tokens[10].Lexeme);
@@ -780,7 +732,7 @@ namespace Lox.Test
             Assert.AreEqual(1, tokens[12].Line);
 
             Assert.AreEqual("}", tokens[13].Lexeme);
-            Assert.AreEqual(TokenType.LEFT_BRACE, tokens[13].Type);
+            Assert.AreEqual(TokenType.RIGHT_BRACE, tokens[13].Type);
             Assert.AreEqual(1, tokens[13].Line);
         }
 
@@ -790,7 +742,7 @@ namespace Lox.Test
             var scanner = new Scanner("var foo = 123; var bar = \"abc\";");
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(10, tokens.Count);
+            Assert.AreEqual(11, tokens.Count);
 
             Assert.AreEqual("var", tokens[0].Lexeme);
             Assert.AreEqual(TokenType.VAR, tokens[0].Type);
@@ -798,7 +750,6 @@ namespace Lox.Test
 
             Assert.AreEqual("foo", tokens[1].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[1].Type);
-            Assert.AreEqual("foo", tokens[1].Literal);
             Assert.AreEqual(1, tokens[1].Line);
 
             Assert.AreEqual("=", tokens[2].Lexeme);
@@ -819,7 +770,6 @@ namespace Lox.Test
 
             Assert.AreEqual("bar", tokens[6].Lexeme);
             Assert.AreEqual(TokenType.IDENTIFIER, tokens[6].Type);
-            Assert.AreEqual("bar", tokens[6].Literal);
             Assert.AreEqual(1, tokens[6].Line);
 
             Assert.AreEqual("=", tokens[7].Lexeme);
@@ -845,7 +795,7 @@ namespace Lox.Test
 
             List<Token> tokens = scanner.Scan();
 
-            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual(4, tokens.Count);
             Assert.AreEqual(TokenType.IF, tokens[0].Type);
             Assert.AreEqual(TokenType.ELSE, tokens[1].Type);
             Assert.AreEqual(TokenType.WHILE, tokens[2].Type);

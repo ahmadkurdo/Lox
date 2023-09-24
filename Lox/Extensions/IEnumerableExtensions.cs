@@ -8,31 +8,22 @@ namespace Lox.Extensions
 {
     public static class IEnumerableExtensions
     {
-        public static IEnumerable<Tuple<T, T, T>> SelectCurrentPreviousNext<T>(this IEnumerable<T> source)
+        public static string substring(this string input, int beginIndex, int endIndex)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
-            using (var enumerator = source.GetEnumerator())
+            if (beginIndex < 0 || beginIndex >= input.Length)
             {
-                if (!enumerator.MoveNext())
-                    yield break; // Empty source
-
-                T previous = default;
-                T current = enumerator.Current;
-                T next;
-
-                while (enumerator.MoveNext())
-                {
-                    next = enumerator.Current;
-                    yield return Tuple.Create(previous, current, next);
-                    previous = current;
-                    current = next;
-                }
-
-                // Handle the last element (no "next" element)
-                yield return Tuple.Create(previous, current, default(T));
+                throw new ArgumentOutOfRangeException(nameof(beginIndex), "Invalid begin index");
             }
+
+            if (endIndex < beginIndex || endIndex > input.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(endIndex), "Invalid end index");
+            }
+
+            int length = endIndex - beginIndex;
+            return input.Substring(beginIndex, length);
         }
     }
+
 }
+
