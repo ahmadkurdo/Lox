@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Text;
-using System;
 using Lox;
+using System.Text;
 
 class Program
 {
@@ -30,7 +29,12 @@ class Program
     {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.Scan();
-
+        if (tokens.Any(token => token.Type == TokenType.Error)) 
+        {
+            var error = tokens.First(toke => toke.Type == TokenType.Error);
+            Error(error.Line, error.Literal.ToString());
+            return;
+        }
         foreach (Token token in tokens)
         {
             Console.WriteLine(token);
@@ -44,10 +48,9 @@ class Program
             for (; ; )
             {
                 Console.Write("> ");
-                string line = input.ReadLine();
+                string? line = input.ReadLine();
                 if (line == null) break;
                 Run(line);
-                hadError = false;
             }
         }
     }

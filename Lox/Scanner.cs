@@ -86,7 +86,7 @@ namespace Lox
                 (_, _, Expect.Identifier) when currentChar.IsAlphaNumeric() && !nextChar.IsAlphaNumeric() => state.AddToken(CreateIdentifierToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
 
 
-                _ => state
+                _ => state.AddToken(CreateErrorToken("Unexpected character", state.line))
             };
 
         public List<Token> Scan()
@@ -104,7 +104,7 @@ namespace Lox
                     return Match(state, cursor.index, cursor.character, next, prev, isLast);
                 });
 
-            return state.Tokens.ToList();
+            return state.Tokens.Append(new Token(TokenType.EOF, "", null, state.line)).ToList();
         }
 
         public Token CreateToken(TokenType type, int start, int end, int line ,object? literal = null)
