@@ -11,7 +11,6 @@ namespace Lox.Test
         public void CreateStringToken_Should_TokenFromCorrectPositionInSource()
         {
             string source = "12343\"Ahmed1233\"23213\"HelloWorld!\"432234\"Test\"";
-            var x = source.Select((x, index) => (x, index)).ToList();
             var scanner = new ScannerV2(source);
 
             Token ahmedToken = scanner.CreateStringToken(5,15,1);
@@ -30,7 +29,6 @@ namespace Lox.Test
         public void CreateDigidToken_Should_TokenFromCorrectPositionInSource()
         {
             string source = "123.5";
-            var x = source.Select((x, index) => (x, index)).ToList();
             var scanner = new ScannerV2(source);
 
             Token res = scanner.CreateDigitToken(0, 4, 1);
@@ -98,7 +96,6 @@ namespace Lox.Test
         {
             var scanner = new ScannerV2("");
 
-            // Valid digit characters
             Assert.IsTrue(scanner.IsDigit('0'));
             Assert.IsTrue(scanner.IsDigit('1'));
             Assert.IsTrue(scanner.IsDigit('2'));
@@ -171,8 +168,6 @@ namespace Lox.Test
             Assert.IsFalse(scanner.IsDigit('y'));
             Assert.IsFalse(scanner.IsDigit('z'));
             Assert.IsFalse(scanner.IsDigit('"'));
-
-            // Add more non-digit characters as needed
         }
 
         [TestMethod]
@@ -183,7 +178,6 @@ namespace Lox.Test
             // Null character input
             Assert.IsFalse(scanner.IsDigit('\0'));
         }
-
 
         [TestMethod]
         public void Scan_Should_ReturnTokenOnCorrect_Line()
@@ -202,6 +196,153 @@ namespace Lox.Test
             Assert.AreEqual(123.5D, tokens[1].Literal);
             Assert.AreEqual(TokenType.NUMBER, tokens[1].Type);
             Assert.AreEqual(2, tokens[1].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_BangEqual()
+        {
+            string source = "!=\n123.5\n!=";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("!=", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.BANG_EQUAL, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("!=", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.BANG_EQUAL, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Bang()
+        {
+            string source = "!\n123.5\n!";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("!", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.BANG, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("!", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.BANG, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Equal()
+        {
+            string source = "=\n123.5\n=";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("=", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.EQUAL, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("=", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.EQUAL, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_EqualEqual()
+        {
+            string source = "==\n123.5\n===";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("==", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.EQUAL_EQUAL, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("==", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.EQUAL_EQUAL, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Equal_As_String_In_A_String()
+        {
+            string source = "\"Ahmed1233==\"\n\"HelloWorld=\"\n\"Test\"";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Less()
+        {
+            string source = "<\n123.5\n<";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("<", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.LESS, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("<", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.LESS, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_LessEqual()
+        {
+            string source = "<=\n123.5\n<==";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.AreEqual(3, tokens.Count);
+
+            Assert.AreEqual("<=", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.LESS_EQUAL, tokens[0].Type);
+            Assert.AreEqual(1, tokens[0].Line);
+
+            Assert.AreEqual("<=", tokens[2].Lexeme);
+            Assert.AreEqual(TokenType.LESS_EQUAL, tokens[2].Type);
+            Assert.AreEqual(3, tokens[2].Line);
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Less_As_String_In_A_String()
+        {
+            string source = "\"Ahmed1233<=\"\n\"HelloWorld<\"\n\"Test<\"";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
+        }
+
+        [TestMethod]
+        public void Scan_Should_Recognize_Bang_As_String_In_A_String()
+        {
+            string source = "\"Ahmed1233\"\n\"HelloWorld!\"\n\"Test\"";
+            var scanner = new ScannerV2(source);
+
+            List<Token> tokens = scanner.Scan();
+
+            Assert.IsTrue(tokens.All(token => token.Type == TokenType.STRING));
         }
 
         [TestMethod]

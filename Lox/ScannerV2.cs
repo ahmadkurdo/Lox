@@ -12,44 +12,44 @@ namespace Lox
             this.source = source;
         }
 
-
-        public ScannerState Match(ScannerState state, (char currentCharacter, int index) cursor) =>
-            (cursor.currentCharacter, state.Expected, state.NextChar, state.IsLastChar) switch
+        public ScannerState Match(ScannerState state, int currentIndex, char currentChar, char nextChar, char prevChar, bool isLastChar) =>
+            (currentChar, nextChar, expected: state.Expected) switch
             {
-                ('\r', _, _, _) => state,
-                ('\t', _, _, _) => state,
-                (' ', _, _, _) => state,
-                ('\n', _, _, _) => state with { line = state.line + 1 },
+                ('\r', _, _) => state,
+                ('\t', _, _) => state,
+                (' ', _, _) => state,
+                ('\n', _, _) => state with { line = state.line + 1 },
 
-                ('/', Expect.None, '/', _) => state with { Expected = Expect.Comment },
-                ('/', Expect.Comment, _, _) => state with { Expected = Expect.None },
-                ('/', Expect.None, _, _) when state.NextChar != '/' => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.SLASH, cursor.index, 1, state.line)) },
+                ('/', '/', Expect.None) => state with { Expected = Expect.Comment },
+                ('/', _, Expect.Comment) => state with { Expected = Expect.Comment },
+                (_, _, Expect.Comment) when nextChar == '\n' || isLastChar => state with { Expected = Expect.None },
+                ('/', _, Expect.None) when nextChar != '/' => state.AddToken(CreateToken(TokenType.SLASH, currentIndex, 1, state.line)),
 
-                ('!', Expect.None, '=', _) => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.BANG_EQUAL, cursor.index, 2, state.line)) },
-                ('>', Expect.None, '=', _) => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.GREATER_EQUAL, cursor.index, 2, state.line)) },
-                ('<', Expect.None, '=', _) => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.LESS_EQUAL, cursor.index, 2, state.line)) },
-                ('=', Expect.None, '=', _) => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.EQUAL_EQUAL, cursor.index, 2, state.line)) },
+                ('!', '=', Expect.None) => state.AddToken(CreateToken(TokenType.BANG_EQUAL, currentIndex, 2, state.line)),
+                ('>', '=', Expect.None) => state.AddToken(CreateToken(TokenType.GREATER_EQUAL, currentIndex, 2, state.line)),
+                ('<', '=', Expect.None) => state.AddToken(CreateToken(TokenType.LESS_EQUAL, currentIndex, 2, state.line)),
+                ('=', '=', Expect.None) when !IsTokenType(prevChar) => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
 
-                ('!', Expect.None, _, _) when state.NextChar != '=' => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.BANG, cursor.index, 1, state.line)) },
-                ('>', Expect.None, _, _) when state.NextChar != '=' => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.GREATER, cursor.index, 1, state.line)) },
-                ('<', Expect.None, _, _) when state.NextChar != '=' => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.LESS, cursor.index, 1, state.line)) },
-                ('=', Expect.None, _, _) when state.NextChar != '=' => state with { Tokens = state.Tokens.Append(CreateToken(TokenType.EQUAL, cursor.index, 1, state.line)) },
+                ('!', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.BANG, currentIndex, 1, state.line)),
+                ('>', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.GREATER, currentIndex, 1, state.line)),
+                ('<', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.LESS, currentIndex, 1, state.line)),
+                ('=', _, Expect.None) when !IsTokenType(prevChar) && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
 
-                ('"', Expect.None, _, _) when state.NextChar != '"' && !state.IsLastChar => state with { LexemeStartIndex = cursor.index, Expected = Expect.String },
-                ('"', Expect.String, '"', _) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateToken(TokenType.STRING, cursor.index, 2, state.line)), Expected = Expect.None },
-                ('"', Expect.String, _, _) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateStringToken(state.LexemeStartIndex, cursor.index, state.line)), Expected = Expect.None },
-                (_, Expect.String, _, true) => state with { Tokens = state.Tokens.Append(CreateErrorToken("Unterminated string", state.line)) },
+                ('"', _, Expect.None) when nextChar != '"' && !isLastChar => state with { LexemeStartIndex = currentIndex, Expected = Expect.String },
+                ('"', '"', Expect.String) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateToken(TokenType.STRING, currentIndex, 2, state.line)), Expected = Expect.None },
+                ('"', _, Expect.String) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+                (_, _, Expect.String) when isLastChar => state.AddToken(CreateErrorToken("Unterminated string", state.line)),
 
-                (_, Expect.None, _, _) when IsDigit(cursor.currentCharacter) => state with { LexemeStartIndex = cursor.index, Expected = Expect.DotOrDigid },
-                (_, Expect.DotOrDigid, _, _) when IsDigit(cursor.currentCharacter) && IsDigit(state.NextChar) => state with { Expected = Expect.DotOrDigid },
-                (_, Expect.DotOrDigid, _, _) when IsDigit(cursor.currentCharacter) && state.NextChar != '.' && (!IsDigit(state.NextChar) || state.IsLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, cursor.index, state.line)), Expected = Expect.None },
-                ('.', Expect.DotOrDigid, _, _) when IsDigit(state.NextChar) => state with { Expected = Expect.Digid },
-                (_, Expect.Digid, _, _) when IsDigit(cursor.currentCharacter) && IsDigit(state.NextChar) => state with { Expected = Expect.Digid },
-                (_, Expect.Digid, _, _) when IsDigit(cursor.currentCharacter) && (!IsDigit(state.NextChar) || state.IsLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, cursor.index, state.line)), Expected = Expect.None },
+                (_, _, Expect.None) when IsDigit(currentChar) => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
+                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.DotOrDigid },
+                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && nextChar != '.' && (!IsDigit(nextChar) || isLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+                ('.', _, Expect.DotOrDigid) when IsDigit(nextChar) => state with { Expected = Expect.Digid },
+                (_, _, Expect.Digid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.Digid },
+                (_, _, Expect.Digid) when IsDigit(currentChar) && (!IsDigit(nextChar) || isLastChar) => state with { LexemeStartIndex = 0, Tokens = state.Tokens.Append(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)), Expected = Expect.None },
+
                 _ => state
             };
-        
-        public bool IsDigit(char c) => c >= '0' && c <= '9';
+
 
         public List<Token> Scan()
         {
@@ -60,12 +60,13 @@ namespace Lox
                 .Aggregate(new ScannerState(), (state, cursor) =>
                 {
                     bool isLast = cursor.index >= source.Length -1;
+                    bool isFirst = cursor.index == 0;
                     char next = !isLast ? source[cursor.index + 1] : default;
-                    return Match(state with { IsLastChar = isLast, NextChar = next }, cursor);
+                    char prev = !isFirst ? source[cursor.index - 1] : default;
+                    return Match(state, cursor.index, cursor.character, next, prev, isLast);
                 });
 
-            var z = state.Tokens.ToList();
-            return z;
+            return state.Tokens.ToList();
         }
 
         public Token CreateToken(TokenType type, int start, int end, int line ,object? literal = null)
@@ -92,5 +93,25 @@ namespace Lox
         {
             return new(TokenType.Error, null, error, line);
         }
+        public bool IsDigit(char c) => c >= '0' && c <= '9';
+
+        public bool IsTokenType(char token) =>
+            token switch
+            {
+                '!' => true,
+                '>' => true,
+                '<' => true,
+                '=' => true,
+                '{' => true,
+                '}' => true,
+                '(' => true,
+                ')' => true,
+                '.' => true,
+                '+' => true,
+                '-' => true,
+                '/' => true,
+                '*' => true,
+                _ => false
+            };
     }
 }
