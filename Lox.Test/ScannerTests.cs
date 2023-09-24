@@ -155,6 +155,27 @@ namespace Lox.Test
         }
 
         [TestMethod]
+        public void Scan_DoubleQuotedString_ReturnsCorrectTokens()
+        {
+            // Arrange
+            string source = "\"Hello, world!\"";
+            var scanner = new ScannerV2(source);
+
+            // Act
+            List<Token> tokens = scanner.Scan();
+
+            // Assert
+            Assert.AreEqual(1, tokens.Count);
+
+            // Token 0: "Hello, world!"
+            Assert.AreEqual("\"Hello, world!\"", tokens[0].Lexeme);
+            Assert.AreEqual(TokenType.STRING, tokens[0].Type);
+            Assert.AreEqual("Hello, world!", tokens[0].Literal);
+            Assert.AreEqual(1, tokens[0].Line);
+        }
+    
+
+        [TestMethod]
         public void CreateDigidToken_Should_TokenFromCorrectPositionInSource()
         {
             string source = "123.5";
