@@ -1,4 +1,5 @@
-﻿using Lox.Models;
+﻿using Lox.Extensions;
+using Lox.Models;
 using System.Globalization;
 
 namespace Lox
@@ -28,28 +29,27 @@ namespace Lox
                 ('!', '=', Expect.None) => state.AddToken(CreateToken(TokenType.BANG_EQUAL, currentIndex, 2, state.line)),
                 ('>', '=', Expect.None) => state.AddToken(CreateToken(TokenType.GREATER_EQUAL, currentIndex, 2, state.line)),
                 ('<', '=', Expect.None) => state.AddToken(CreateToken(TokenType.LESS_EQUAL, currentIndex, 2, state.line)),
-                ('=', '=', Expect.None) when !IsTokenType(prevChar) => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
+                ('=', '=', Expect.None) when !prevChar.IsTokenType() => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
 
                 ('!', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.BANG, currentIndex, 1, state.line)),
                 ('>', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.GREATER, currentIndex, 1, state.line)),
                 ('<', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.LESS, currentIndex, 1, state.line)),
-                ('=', _, Expect.None) when !IsTokenType(prevChar) && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
+                ('=', _, Expect.None) when !prevChar.IsTokenType() && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
 
                 ('"', _, Expect.None) when nextChar != '"' && !isLastChar => state with { LexemeStartIndex = currentIndex, Expected = Expect.String },
                 ('"', '"', Expect.String) => state.AddToken(CreateToken(TokenType.STRING, currentIndex, 2, state.line)).Reset(),
                 ('"', _, Expect.String) => state.AddToken(CreateStringToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
                 (_, _, Expect.String) when isLastChar => state.AddToken(CreateErrorToken("Unterminated string", state.line)),
 
-                (_, _, Expect.None) when IsDigit(currentChar) => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
-                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.DotOrDigid },
-                (_, _, Expect.DotOrDigid) when IsDigit(currentChar) && nextChar != '.' && (!IsDigit(nextChar) || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
-                ('.', _, Expect.DotOrDigid) when IsDigit(nextChar) => state with { Expected = Expect.Digid },
-                (_, _, Expect.Digid) when IsDigit(currentChar) && IsDigit(nextChar) => state with { Expected = Expect.Digid },
-                (_, _, Expect.Digid) when IsDigit(currentChar) && (!IsDigit(nextChar) || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
+                (_, _, Expect.None) when currentChar.IsDigit() => state with { LexemeStartIndex = currentIndex, Expected = Expect.DotOrDigid },
+                (_, _, Expect.DotOrDigid) when currentChar.IsDigit() && nextChar.IsDigit() => state with { Expected = Expect.DotOrDigid },
+                (_, _, Expect.DotOrDigid) when currentChar.IsDigit() && nextChar != '.' && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
+                ('.', _, Expect.DotOrDigid) when nextChar.IsDigit() => state with { Expected = Expect.Digid },
+                (_, _, Expect.Digid) when currentChar.IsDigit() && nextChar.IsDigit() => state with { Expected = Expect.Digid },
+                (_, _, Expect.Digid) when currentChar.IsDigit() && (!nextChar.IsDigit() || isLastChar) => state.AddToken(CreateDigitToken(state.LexemeStartIndex, currentIndex, state.line)).Reset(),
 
                 _ => state
             };
-
 
         public List<Token> Scan()
         {
@@ -93,25 +93,5 @@ namespace Lox
         {
             return new(TokenType.Error, null, error, line);
         }
-        public bool IsDigit(char c) => c >= '0' && c <= '9';
-
-        public bool IsTokenType(char token) =>
-            token switch
-            {
-                '!' => true,
-                '>' => true,
-                '<' => true,
-                '=' => true,
-                '{' => true,
-                '}' => true,
-                '(' => true,
-                ')' => true,
-                '.' => true,
-                '+' => true,
-                '-' => true,
-                '/' => true,
-                '*' => true,
-                _ => false
-            };
     }
 }

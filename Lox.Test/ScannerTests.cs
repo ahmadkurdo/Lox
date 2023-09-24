@@ -1,9 +1,10 @@
+using Lox.Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace Lox.Test
 {
     [TestClass]
-    public class ScannerUnitTest
+    public class ScannerTests
     {
 
 
@@ -109,94 +110,6 @@ namespace Lox.Test
             Assert.AreEqual(TokenType.NUMBER, tokens[0].Type);
             Assert.AreEqual(2, tokens[0].Line);
             Assert.AreEqual(1, tokens.Count);
-        }
-
-        [TestMethod]
-        public void IsDigit_Should_ReturnTrue_ForValidDigits()
-        {
-            var scanner = new ScannerV2("");
-
-            Assert.IsTrue(scanner.IsDigit('0'));
-            Assert.IsTrue(scanner.IsDigit('1'));
-            Assert.IsTrue(scanner.IsDigit('2'));
-            Assert.IsTrue(scanner.IsDigit('3'));
-            Assert.IsTrue(scanner.IsDigit('4'));
-            Assert.IsTrue(scanner.IsDigit('5'));
-            Assert.IsTrue(scanner.IsDigit('6'));
-            Assert.IsTrue(scanner.IsDigit('7'));
-            Assert.IsTrue(scanner.IsDigit('8'));
-            Assert.IsTrue(scanner.IsDigit('9'));
-        }
-
-        [TestMethod]
-        public void IsDigit_Should_ReturnFalse_ForNonDigits()
-        {
-            var scanner = new ScannerV2("");
-
-            // Non-digit characters
-            Assert.IsFalse(scanner.IsDigit('A'));
-            Assert.IsFalse(scanner.IsDigit('B'));
-            Assert.IsFalse(scanner.IsDigit('C'));
-            Assert.IsFalse(scanner.IsDigit('D'));
-            Assert.IsFalse(scanner.IsDigit('E'));
-            Assert.IsFalse(scanner.IsDigit('F'));
-            Assert.IsFalse(scanner.IsDigit('G'));
-            Assert.IsFalse(scanner.IsDigit('H'));
-            Assert.IsFalse(scanner.IsDigit('I'));
-            Assert.IsFalse(scanner.IsDigit('J'));
-            Assert.IsFalse(scanner.IsDigit('K'));
-            Assert.IsFalse(scanner.IsDigit('L'));
-            Assert.IsFalse(scanner.IsDigit('M'));
-            Assert.IsFalse(scanner.IsDigit('N'));
-            Assert.IsFalse(scanner.IsDigit('O'));
-            Assert.IsFalse(scanner.IsDigit('P'));
-            Assert.IsFalse(scanner.IsDigit('Q'));
-            Assert.IsFalse(scanner.IsDigit('R'));
-            Assert.IsFalse(scanner.IsDigit('S'));
-            Assert.IsFalse(scanner.IsDigit('T'));
-            Assert.IsFalse(scanner.IsDigit('U'));
-            Assert.IsFalse(scanner.IsDigit('V'));
-            Assert.IsFalse(scanner.IsDigit('W'));
-            Assert.IsFalse(scanner.IsDigit('X'));
-            Assert.IsFalse(scanner.IsDigit('Y'));
-            Assert.IsFalse(scanner.IsDigit('Z'));
-
-            Assert.IsFalse(scanner.IsDigit('a'));
-            Assert.IsFalse(scanner.IsDigit('b'));
-            Assert.IsFalse(scanner.IsDigit('c'));
-            Assert.IsFalse(scanner.IsDigit('d'));
-            Assert.IsFalse(scanner.IsDigit('e'));
-            Assert.IsFalse(scanner.IsDigit('f'));
-            Assert.IsFalse(scanner.IsDigit('g'));
-            Assert.IsFalse(scanner.IsDigit('h'));
-            Assert.IsFalse(scanner.IsDigit('i'));
-            Assert.IsFalse(scanner.IsDigit('j'));
-            Assert.IsFalse(scanner.IsDigit('k'));
-            Assert.IsFalse(scanner.IsDigit('l'));
-            Assert.IsFalse(scanner.IsDigit('m'));
-            Assert.IsFalse(scanner.IsDigit('n'));
-            Assert.IsFalse(scanner.IsDigit('o'));
-            Assert.IsFalse(scanner.IsDigit('p'));
-            Assert.IsFalse(scanner.IsDigit('q'));
-            Assert.IsFalse(scanner.IsDigit('r'));
-            Assert.IsFalse(scanner.IsDigit('s'));
-            Assert.IsFalse(scanner.IsDigit('t'));
-            Assert.IsFalse(scanner.IsDigit('u'));
-            Assert.IsFalse(scanner.IsDigit('v'));
-            Assert.IsFalse(scanner.IsDigit('w'));
-            Assert.IsFalse(scanner.IsDigit('x'));
-            Assert.IsFalse(scanner.IsDigit('y'));
-            Assert.IsFalse(scanner.IsDigit('z'));
-            Assert.IsFalse(scanner.IsDigit('"'));
-        }
-
-        [TestMethod]
-        public void IsDigit_Should_ReturnFalse_ForNullCharacter()
-        {
-            var scanner = new ScannerV2("");
-
-            // Null character input
-            Assert.IsFalse(scanner.IsDigit('\0'));
         }
 
         [TestMethod]
