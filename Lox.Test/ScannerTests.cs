@@ -10,7 +10,7 @@ namespace Lox.Test
         public void Scan_Assignment_Statement_ReturnsCorrectTokens()
         {
             string source = "var name = \"John\"; 123";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -49,7 +49,7 @@ namespace Lox.Test
         public void Scan_Arithmatic_Expr_ReturnsCorrectTokens()
         {
             string source = "(1 + 2) - 3";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -91,7 +91,7 @@ namespace Lox.Test
         public void Scan_If_Statement_ReturnsCorrectTokens()
         {
             string source = "if(true){return \"Hello World!\"};";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -140,7 +140,7 @@ namespace Lox.Test
         public void CreateStringToken_Should_TokenFromCorrectPositionInSource()
         {
             string source = "12343\"Ahmed1233\"23213\"HelloWorld!\"432234\"Test\"";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             Token ahmedToken = scanner.CreateStringToken(5,15,1);
             Token helloWorldToken = scanner.CreateStringToken(21, 33, 1);
@@ -159,7 +159,7 @@ namespace Lox.Test
         {
             // Arrange
             string source = "\"Hello, world!\"";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             // Act
             List<Token> tokens = scanner.Scan();
@@ -179,7 +179,7 @@ namespace Lox.Test
         public void CreateDigidToken_Should_TokenFromCorrectPositionInSource()
         {
             string source = "123.5";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             Token res = scanner.CreateDigitToken(0, 4, 1);
 
@@ -191,7 +191,7 @@ namespace Lox.Test
         public void Scan_CombinationOfLiteralsAndOperators_ReturnsCorrectToken()
         {
             string source = "12343\"Ahmed1233\"//comment should be ignored\n23213\"HelloWorld!\"\n123.5\"Test\"!=<=<>=>";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -250,7 +250,7 @@ namespace Lox.Test
         public void Scan_Comments_ReturnsEmptyTokens()
         {
             string source = "// This is a comment\n123.5";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
             
@@ -267,7 +267,7 @@ namespace Lox.Test
         public void Scan_Should_ReturnTokenOnCorrect_Line()
         {
             string source = "\"Hello, World!\"\n123.5";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -286,7 +286,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_BangEqual()
         {
             string source = "!=\n123.5\n!=";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -305,7 +305,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Bang()
         {
             string source = "!\n123.5\n!";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -324,7 +324,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Equal()
         {
             string source = "=\n123.5\n=";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -343,7 +343,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_EqualEqual()
         {
             string source = "==\n123.5\n===";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -362,7 +362,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Equal_As_String_In_A_String()
         {
             string source = "\"Ahmed1233==\"\n\"HelloWorld=\"\n\"Test\"";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -373,7 +373,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Less()
         {
             string source = "<\n123.5\n<";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -392,7 +392,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_LessEqual()
         {
             string source = "<=\n123.5\n<==";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -411,7 +411,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Less_As_String_In_A_String()
         {
             string source = "\"Ahmed1233<=\"\n\"HelloWorld<\"\n\"Test<\"";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -422,7 +422,7 @@ namespace Lox.Test
         public void Scan_Should_Recognize_Bang_As_String_In_A_String()
         {
             string source = "\"Ahmed1233\"\n\"HelloWorld!\"\n\"Test\"";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -433,7 +433,7 @@ namespace Lox.Test
         public void Scan_EmptySource_ReturnsEmptyTokens()
         {
             string source = "";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -444,7 +444,7 @@ namespace Lox.Test
         public void Scan_WhitespaceSource_ReturnsEmptyTokens()
         {
             string source = "    \t  \r";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -455,7 +455,7 @@ namespace Lox.Test
         public void Scan_SpecialCharacters_ReturnsCorrectTokens()
         {
             string source = "( ) { } , ;";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
@@ -471,7 +471,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_Should_ReturnKeywordTokens()
         {
-            var scanner = new ScannerV2("class fun var if else");
+            var scanner = new Scanner("class fun var if else");
             List<Token> tokens = scanner.Scan();
 
             Assert.IsNotNull(tokens);
@@ -486,7 +486,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_Should_ReturnErrorTokenForUnterminatedString()
         {
-            var scanner = new ScannerV2("\"Unterminated string");
+            var scanner = new Scanner("\"Unterminated string");
             List<Token> tokens = scanner.Scan();
 
             Assert.IsNotNull(tokens);
@@ -498,7 +498,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_Should_ReturnBooleanTokens()
         {
-            var scanner = new ScannerV2("true false");
+            var scanner = new Scanner("true false");
             List<Token> tokens = scanner.Scan();
 
             Assert.AreEqual(2, tokens.Count);
@@ -517,7 +517,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_Should_IgnoreSingleLineComment()
         {
-            var scanner = new ScannerV2("int x = 42; // This is a comment");
+            var scanner = new Scanner("int x = 42; // This is a comment");
             List<Token> tokens = scanner.Scan();
             Assert.AreEqual(5, tokens.Count);
         }
@@ -525,7 +525,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_ForLoop_Should_ReturnCorrectTokens()
         {
-            var scanner = new ScannerV2("for (int i = 0; i < 5; i = i + 1) { print(i); }");
+            var scanner = new Scanner("for (int i = 0; i < 5; i = i + 1) { print(i); }");
             List<Token> tokens = scanner.Scan();
 
             Assert.AreEqual(24, tokens.Count);
@@ -638,7 +638,7 @@ namespace Lox.Test
         {
             // Arrange
             string source = "if (condition) { statement1; } else { statement2; }";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             // Act
             List<Token> tokens = scanner.Scan();
@@ -719,7 +719,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_WhileLoop_Should_ReturnCorrectTokens()
         {
-            var scanner = new ScannerV2("while (x < 10) { x = x + 1; }");
+            var scanner = new Scanner("while (x < 10) { x = x + 1; }");
             List<Token> tokens = scanner.Scan();
 
             Assert.AreEqual(14, tokens.Count);
@@ -787,7 +787,7 @@ namespace Lox.Test
         [TestMethod]
         public void Scan_Should_ReturnIdentifierTokens()
         {
-            var scanner = new ScannerV2("var foo = 123; var bar = \"abc\";");
+            var scanner = new Scanner("var foo = 123; var bar = \"abc\";");
             List<Token> tokens = scanner.Scan();
 
             Assert.AreEqual(10, tokens.Count);
@@ -841,7 +841,7 @@ namespace Lox.Test
         public void Scan_Keywords_ReturnsCorrectTokens()
         {
             string source = "if else while";
-            var scanner = new ScannerV2(source);
+            var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
 
