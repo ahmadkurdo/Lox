@@ -1,6 +1,3 @@
-using Lox.Extensions;
-using Newtonsoft.Json.Linq;
-
 namespace Lox.Test
 {
     [TestClass]

@@ -29,12 +29,13 @@ namespace Lox
                 ('!', '=', Expect.None) => state.AddToken(CreateToken(TokenType.BANG_EQUAL, currentIndex, 2, state.line)),
                 ('>', '=', Expect.None) => state.AddToken(CreateToken(TokenType.GREATER_EQUAL, currentIndex, 2, state.line)),
                 ('<', '=', Expect.None) => state.AddToken(CreateToken(TokenType.LESS_EQUAL, currentIndex, 2, state.line)),
-                ('=', '=', Expect.None) when !prevChar.IsTokenType() => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
+                ('=', '=', Expect.None) when !prevChar.IsOperator() => state.AddToken(CreateToken(TokenType.EQUAL_EQUAL, currentIndex, 2, state.line)),
 
                 ('!', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.BANG, currentIndex, 1, state.line)),
                 ('>', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.GREATER, currentIndex, 1, state.line)),
                 ('<', _, Expect.None) when nextChar != '=' => state.AddToken(CreateToken(TokenType.LESS, currentIndex, 1, state.line)),
-                ('=', _, Expect.None) when !prevChar.IsTokenType() && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
+                //To prevent ===
+                ('=', _, Expect.None) when !prevChar.IsOperator() && nextChar != '=' => state.AddToken(CreateToken(TokenType.EQUAL, currentIndex, 1, state.line)),
 
                 ('"', _, Expect.None) when nextChar != '"' && !isLastChar => state with { LexemeStartIndex = currentIndex, Expected = Expect.String },
                 ('"', '"', Expect.String) => state.AddToken(CreateToken(TokenType.STRING, currentIndex, 2, state.line)).Reset(),

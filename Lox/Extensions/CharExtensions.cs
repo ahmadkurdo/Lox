@@ -10,18 +10,13 @@ namespace Lox.Extensions
     {
         public static bool IsDigit(this char c) => c >= '0' && c <= '9';
 
-        public static bool IsTokenType(this char token) =>
+        public static bool IsOperator(this char token) =>
             token switch
             {
                 '!' => true,
                 '>' => true,
                 '<' => true,
                 '=' => true,
-                '{' => true,
-                '}' => true,
-                '(' => true,
-                ')' => true,
-                '.' => true,
                 '+' => true,
                 '-' => true,
                 '/' => true,

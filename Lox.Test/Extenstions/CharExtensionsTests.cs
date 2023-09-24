@@ -81,115 +81,75 @@ namespace Lox.Test.Extenstions
             Assert.IsFalse('"'.IsDigit());
         }
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForExclamationMark()
+        public void IsOperator_Should_ReturnTrue_ForExclamationMark()
         {
 
             char token = '!';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForGreaterThan()
+        public void IsOperator_Should_ReturnTrue_ForGreaterThan()
         {
             char token = '>';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForLessThan()
+        public void IsOperator_Should_ReturnTrue_ForLessThan()
         {
             char token = '<';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForEqualSign()
+        public void IsOperator_Should_ReturnTrue_ForEqualSign()
         {
             char token = '=';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForLeftCurlyBrace()
-        {
-            char token = '{';
-            bool result = token.IsTokenType();
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForRightCurlyBrace()
-        {
-            char token = '}';
-            bool result = token.IsTokenType();
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForLeftParenthesis()
-        {
-            char token = '(';
-            bool result = token.IsTokenType();
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForRightParenthesis()
-        {
-            char token = ')';
-            bool result = token.IsTokenType();
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForPeriod()
-        {
-            char token = '.';
-            bool result = token.IsTokenType();
-            Assert.IsTrue(result);
-        }
-
-        [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForPlus()
+        public void IsOperator_Should_ReturnTrue_ForPlus()
         {
             char token = '+';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForMinus()
+        public void IsOperator_Should_ReturnTrue_ForMinus()
         {
             char token = '-';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForSlash()
+        public void IsOperator_Should_ReturnTrue_ForSlash()
         {
             char token = '/';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnTrue_ForAsterisk()
+        public void IsOperator_Should_ReturnTrue_ForAsterisk()
         {
             char token = '*';
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsTrue(result);
         }
 
         [TestMethod]
-        public void IsTokenType_Should_ReturnFalse_ForOtherCharacters()
+        public void IsOperator_Should_ReturnFalse_ForOtherCharacters()
         {
             char token = 'A'; // Any character that's not in the switch statement
-            bool result = token.IsTokenType();
+            bool result = token.IsOperator();
             Assert.IsFalse(result);
         }
 
