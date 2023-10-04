@@ -23,7 +23,7 @@ namespace Lox.AST
             foreach (Expr expr in exprs) 
             {
                 sb.Append(" ");
-                sb.Append(expr.Accept<string>(this));
+                sb.Append(expr.Accept(this));
             }
             sb.Append(")");
             return sb.ToString();
