@@ -74,7 +74,6 @@ class Program
     {
         Console.Error.WriteLine($"[line {line}] Error{where}: {message}");
         hadError = true;
-
     }
 }
 
