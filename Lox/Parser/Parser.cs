@@ -17,6 +17,8 @@ namespace Lox.Parser
 
         public Parser(ParserState state) => State = state;
         
+        public Expr Parse() => Expression();
+        
         private Expr Expression() =>  Equality();
 
         private Expr Equality() => ParseBinary(() => Comparison(), TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL);
@@ -29,7 +31,7 @@ namespace Lox.Parser
 
         private Expr Unary() 
         {
-            if (State.NextIs(TokenType.BANG, TokenType.MINUS)) 
+            if (State.CurrentIs(TokenType.BANG, TokenType.MINUS)) 
             {
                 Token op = State.Previous();
                 Expr right = Unary();
@@ -43,7 +45,7 @@ namespace Lox.Parser
         {
             Expr expr = next();
 
-            while (State.NextIs(types))
+            while (State.CurrentIs(types))
             {
                 Token op = State.Previous();
                 Expr right = next();
@@ -55,20 +57,25 @@ namespace Lox.Parser
 
         private Expr Primary()
         {
-            switch (State.GetNext().Type)
+            switch (State.Peek().Type)
             {
                 case TokenType.FALSE:
+                    State.MoveNext();
                     return new Literal(false);
 
                 case TokenType.TRUE:
+                    State.MoveNext();
                     return new Literal(true);
 
                 case TokenType.NIL:
+                    State.MoveNext();
+
                     return new Literal(null);
 
                 case TokenType.NUMBER:
                 case TokenType.STRING:
-                    return new Literal(State.GetCurrent().Literal);
+                    State.MoveNext();
+                    return new Literal(State.Previous().Literal);
 
                 case TokenType.LEFT_PAREN:
                     Expr expr = Expression();
@@ -76,7 +83,7 @@ namespace Lox.Parser
                     return new Grouping(expr);
 
                 default:
-                    Program.Error(State.GetCurrent(), "Expect expression.");
+                    Program.Error(State.Previous(), "Expect expression.");
                     return default;
             }
         }

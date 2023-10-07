@@ -17,11 +17,9 @@
             Cursor++;
         }
 
-        public Token GetCurrent() => Tokens[Cursor];
-
         public Token GetNext() => Tokens[++Cursor];
 
-        public Token Peek() => Tokens[++Cursor];
+        public Token Peek() => Tokens[Cursor];
 
         public Token PeekNext() => Tokens[Cursor + 1];
 
@@ -29,11 +27,11 @@
 
         public bool IsAtEnd() => Peek().Type == TokenType.EOF;
 
-        public bool IsSameAsNext(TokenType type) => !IsAtEnd() && Peek().Type == type;
+        public bool IsSameAsCurrent(TokenType type) => !IsAtEnd() && Peek().Type == type;
 
-        public bool NextIs(params TokenType[] types)
+        public bool CurrentIs(params TokenType[] types)
         {
-            if (types.Any(IsSameAsNext))
+            if (types.Any(IsSameAsCurrent))
             {
                 MoveNext();
                 return true;
@@ -44,7 +42,7 @@
 
         public void Consume(TokenType type, string message)
         {
-            if (IsSameAsNext(type))
+            if (IsSameAsCurrent(type))
             {
                 MoveNext();
             }
