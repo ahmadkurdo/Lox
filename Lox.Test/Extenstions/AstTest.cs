@@ -80,39 +80,6 @@ namespace Lox.Test.Extenstions
             Assert.AreEqual("(* (+ 1 2) (- 3 4))", result);
         }
 
-        //[TestMethod]
-        //public void Print_NullLiteral_PrintsNil()
-        //{
-        //    var literalExpr = new Literal(null);
-        //    var astPrinter = new AstPrinter();
-
-        //    var result = astPrinter.Print(literalExpr);
-
-        //    Assert.AreEqual("nil", result);
-        //}
-
-        //[TestMethod]
-        //public void Print_EmptyGrouping_PrintsCorrectly()
-        //{
-        //    var groupingExpr = new Grouping(null);
-        //    var astPrinter = new AstPrinter();
-
-        //    var result = astPrinter.Print(groupingExpr);
-
-        //    Assert.AreEqual("(group nil)", result);
-        //}
-
-        //[TestMethod]
-        //public void Print_EmptyBinaryExpr_PrintsCorrectly()
-        //{
-        //    var binaryExpr = new Binary(null, new Token(TokenType.PLUS, "+", null, 0), null);
-        //    var astPrinter = new AstPrinter();
-
-        //    var result = astPrinter.Print(binaryExpr);
-
-        //    Assert.AreEqual("(+ nil nil)", result);
-        //}
-
         [TestMethod]
         public void Print_MultipleNestedExpr_PrintsCorrectly()
         {
