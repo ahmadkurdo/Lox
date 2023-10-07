@@ -17,7 +17,7 @@
             Cursor++;
         }
 
-        public Token GetCurrent() => Tokens[Cursor++];
+        public Token GetCurrent() => Tokens[Cursor];
 
         public Token GetNext() => Tokens[++Cursor];
 
@@ -30,6 +30,17 @@
         public bool IsAtEnd() => Peek().Type == TokenType.EOF;
 
         public bool IsSameAsNext(TokenType type) => !IsAtEnd() && Peek().Type == type;
+
+        public bool NextIs(params TokenType[] types)
+        {
+            if (types.Any(IsSameAsNext))
+            {
+                MoveNext();
+                return true;
+            }
+
+            return false;
+        }
 
         public void Consume(TokenType type, string message)
         {

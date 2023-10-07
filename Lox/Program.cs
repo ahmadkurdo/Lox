@@ -43,15 +43,13 @@ class Program
 
     static void RunPrompt()
     {
-        using (var input = new StreamReader(Console.OpenStandardInput()))
+        using var input = new StreamReader(Console.OpenStandardInput());
+        for (; ; )
         {
-            for (; ; )
-            {
-                Console.Write("> ");
-                string? line = input.ReadLine();
-                if (line == null) break;
-                Run(line);
-            }
+            Console.Write("> ");
+            string? line = input.ReadLine();
+            if (line == null) break;
+            Run(line);
         }
     }
 
@@ -60,7 +58,7 @@ class Program
         Report(line, "", message);
     }
 
-    static void error(Token token, string message)
+    public static void Error(Token token, string message)
     {
         if (token.Type == TokenType.EOF)
         {
@@ -76,7 +74,7 @@ class Program
     {
         Console.Error.WriteLine($"[line {line}] Error{where}: {message}");
         hadError = true;
-        a = b
+
     }
 }
 

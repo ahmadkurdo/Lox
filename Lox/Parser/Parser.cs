@@ -1,5 +1,4 @@
 ﻿using Lox.AST;
-using System.Runtime.InteropServices;
 
 namespace Lox.Parser
 {
@@ -16,75 +15,21 @@ namespace Lox.Parser
     {
         public ParserState State { get; set; }
 
-        public Parser(ParserState state)
-        {
-            State = state;
-        }
-
-        private Expr Expression() =>  Equality();
+        public Parser(ParserState state) => State = state;
         
-        private Expr Equality() 
-        {
-            Expr expr = Comparison();
+        private Expr Expression() =>  Equality();
 
-            while(NextIs(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) 
-            {
-                // a == b
-                Token op = State.Previous();
-                Expr right = Comparison();
-                expr = new Binary(expr, op, right);
-            }
+        private Expr Equality() => ParseBinary(() => Comparison(), TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL);
+    
+        private Expr Comparison() => ParseBinary(() => Term(), TokenType.LESS, TokenType.LESS_EQUAL, TokenType.GREATER, TokenType.GREATER_EQUAL);
 
-            return expr;
-        }
+        private Expr Term() =>  ParseBinary(() => Factor(), TokenType.PLUS, TokenType.MINUS);
 
-        private Expr Comparison()
-        {
-
-            Expr expr = Term();
-
-            while (NextIs(TokenType.LESS, TokenType.LESS_EQUAL, TokenType.GREATER, TokenType.GREATER_EQUAL))
-            {
-                Token op = State.Previous();
-                Expr right = Term();
-                expr = new Binary(expr, op, right);
-            }
-
-            return expr;
-        }
-
-        private Expr Term() 
-        {
-            Expr expr = Factor();
-
-            while (NextIs(TokenType.PLUS, TokenType.MINUS))
-            {
-                Token op = State.Previous();
-                Expr right = Factor();
-                expr = new Binary(expr, op, right);
-            }
-
-            return expr;
-        }
-
-        private Expr Factor() 
-        {
-            Expr expr = Unary();
-
-            while (NextIs(TokenType.PLUS, TokenType.MINUS))
-            {
-                Token op = State.Previous();
-                Expr right = Unary();
-                expr = new Binary(expr, op, right);
-            }
-
-            return expr;
-        }
+        private Expr Factor() => ParseBinary(() => Unary(), TokenType.SLASH, TokenType.STAR);
 
         private Expr Unary() 
         {
-
-            if (NextIs(TokenType.BANG, TokenType.MINUS)) 
+            if (State.NextIs(TokenType.BANG, TokenType.MINUS)) 
             {
                 Token op = State.Previous();
                 Expr right = Unary();
@@ -94,38 +39,47 @@ namespace Lox.Parser
             return Primary();
         }
 
-        private Expr Primary() 
+        private Expr ParseBinary(Func<Expr> next, params TokenType[] types)
         {
-            if (NextIs(TokenType.FALSE))
-                return new Literal(false);
+            Expr expr = next();
 
-            if (NextIs(TokenType.TRUE))
-                return new Literal(true);
-
-            if (NextIs(TokenType.NIL))
-                return new Literal(null);
-
-            if (NextIs(TokenType.NUMBER, TokenType.STRING))
-                return new Literal(State.Previous().Literal);
-
-            if (NextIs(TokenType.LEFT_PAREN)) 
+            while (State.NextIs(types))
             {
-                Expr expr = Expression();
-                State.Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
-                return new Grouping(expr);
+                Token op = State.Previous();
+                Expr right = next();
+                expr = new Binary(expr, op, right);
             }
-            return default;
+
+            return expr;
         }
 
-        private bool NextIs(params TokenType[] types) 
+        private Expr Primary()
         {
-            if (types.Any(t => State.IsSameAsNext(t))) 
+            switch (State.GetNext().Type)
             {
-                State.MoveNext();
-                return true;
-            
+                case TokenType.FALSE:
+                    return new Literal(false);
+
+                case TokenType.TRUE:
+                    return new Literal(true);
+
+                case TokenType.NIL:
+                    return new Literal(null);
+
+                case TokenType.NUMBER:
+                case TokenType.STRING:
+                    return new Literal(State.GetCurrent().Literal);
+
+                case TokenType.LEFT_PAREN:
+                    Expr expr = Expression();
+                    State.Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+                    return new Grouping(expr);
+
+                default:
+                    Program.Error(State.GetCurrent(), "Expect expression.");
+                    return default;
             }
-            return false;
         }
+
     }
 }
