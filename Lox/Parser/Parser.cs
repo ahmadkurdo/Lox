@@ -49,7 +49,7 @@ namespace Lox.Parser
             {
                 Token op = State.Previous();
                 Expr right = next();
-                expr = new Binary(expr, op, right);
+                expr = new Binary(expr, op, right); 
             }
 
             return expr;
@@ -78,6 +78,7 @@ namespace Lox.Parser
                     return new Literal(State.Previous().Literal);
 
                 case TokenType.LEFT_PAREN:
+                    State.MoveNext();
                     Expr expr = Expression();
                     State.Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
                     return new Grouping(expr);

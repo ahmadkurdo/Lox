@@ -1,5 +1,6 @@
 ﻿using Lox.AST;
 using Lox.Parser;
+using Lox.Test.TestHelpers;
 
 namespace Lox.Test.Parser
 {
@@ -27,6 +28,80 @@ namespace Lox.Test.Parser
             Assert.IsNotNull(res);
             Assert.IsTrue(res is Binary);
             Assert.AreEqual(printer.Print(res), "(> 1 2)");
+        }
+
+        [TestMethod]
+        public void Parser_Should_Parse_Equality_And_Comparison_Epxr()
+        {
+            var expression = "1 > 2 == 3 < 4";
+            Scanner scanner = new Scanner(expression);
+            var tokens = scanner.Scan();
+            ParserState parserState = new ParserState(0, tokens);
+            AstPrinter printer = new AstPrinter();
+            Lox.Parser.Parser parser = new Lox.Parser.Parser(parserState);
+
+            var res = parser.Parse();
+
+            Assert.AreEqual(res.As(x => (Binary)x).Right.As(x => (Binary)x).Operation.Type, TokenType.LESS);
+            Assert.AreEqual(3D, res.As(x => (Binary)x).Right.As(x => (Binary)x).Left.As(x => (Literal)x).Value);
+            Assert.AreEqual(4D, res.As(x => (Binary)x).Right.As(x => (Binary)x).Right.As(x => (Literal)x).Value);
+            Assert.AreEqual(res.As(x => (Binary)x).Left.As(x => (Binary)x).Operation.Type, TokenType.GREATER);
+            Assert.AreEqual(1D, res.As(x => (Binary)x).Left.As(x => (Binary)x).Left.As(x => (Literal)x).Value);
+            Assert.AreEqual(2D, res.As(x => (Binary)x).Left.As(x => (Binary)x).Right.As(x => (Literal)x).Value);
+            Assert.AreEqual(res.As(x => (Binary)x).Operation.Type, TokenType.EQUAL_EQUAL);
+            Assert.IsNotNull(res);
+            Assert.IsTrue(res is Binary);
+        }
+
+        [TestMethod]
+        public void Parser_Should_Parse_Addition_Expression()
+        {
+            var expression = "1 + 2";
+            Scanner scanner = new Scanner(expression);
+            var tokens = scanner.Scan();
+            ParserState parserState = new ParserState(0, tokens);
+            AstPrinter printer = new AstPrinter();
+            Lox.Parser.Parser parser = new Lox.Parser.Parser(parserState);
+
+            var res = parser.Parse();
+
+            Assert.IsNotNull(res);
+            Assert.IsTrue(res is Binary);
+            Assert.AreEqual(printer.Print(res), "(+ 1 2)");
+        }
+
+        [TestMethod]
+        public void Parser_Should_Parse_Multiplication_Precedence()
+        {
+            var expression = "1 + 2 * 3";
+            Scanner scanner = new Scanner(expression);
+            var tokens = scanner.Scan();
+            ParserState parserState = new ParserState(0, tokens);
+            AstPrinter printer = new AstPrinter();
+            Lox.Parser.Parser parser = new Lox.Parser.Parser(parserState);
+
+            var res = parser.Parse();
+
+            Assert.IsNotNull(res);
+            Assert.IsTrue(res is Binary);
+            Assert.AreEqual(printer.Print(res), "(+ 1 (* 2 3))");
+        }
+
+        [TestMethod]
+        public void Parser_Should_Parse_Grouped_Expressions()
+        {
+            var expression = "(1 + 2) * 3";
+            Scanner scanner = new Scanner(expression);
+            var tokens = scanner.Scan();
+            ParserState parserState = new ParserState(0, tokens);
+            AstPrinter printer = new AstPrinter();
+            Lox.Parser.Parser parser = new Lox.Parser.Parser(parserState);
+
+            var res = parser.Parse();
+
+            Assert.IsNotNull(res);
+            Assert.IsTrue(res is Binary);
+            Assert.AreEqual("(* (group (+ 1 2)) 3)", printer.Print(res));
         }
     }
 }

@@ -40,16 +40,18 @@
             return false;
         }
 
-        public void Consume(TokenType type, string message)
+        public Token Consume(TokenType type, string message)
         {
             if (IsSameAsCurrent(type))
             {
                 MoveNext();
+                return Previous();
             }
             else
             {
                 Program.Error(Peek().Line, message);
             }
+            return default;
         }
     }
 }
