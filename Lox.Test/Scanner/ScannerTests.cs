@@ -1,5 +1,4 @@
-using Lox.Extensions;
-using Newtonsoft.Json.Linq;
+using Lox.Models;
 
 namespace Lox.Test
 {
@@ -152,7 +151,7 @@ namespace Lox.Test
             Assert.AreEqual("Hello, world!", tokens[0].Literal);
             Assert.AreEqual(1, tokens[0].Line);
         }
-    
+
         [TestMethod]
         public void Scan_CombinationOfLiteralsAndOperators_ReturnsCorrectToken()
         {
@@ -219,7 +218,7 @@ namespace Lox.Test
             var scanner = new Scanner(source);
 
             List<Token> tokens = scanner.Scan();
-            
+
             Assert.AreEqual("123.5", tokens[0].Lexeme);
             Assert.AreEqual(123.5D, tokens[0].Literal);
             Assert.AreEqual(TokenType.NUMBER, tokens[0].Type);

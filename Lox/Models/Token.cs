@@ -1,4 +1,4 @@
-﻿namespace Lox
+﻿namespace Lox.Models
 {
     public class Token
     {

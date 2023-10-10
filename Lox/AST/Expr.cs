@@ -1,4 +1,5 @@
 ﻿using Lox.AST.Abstract;
+using Lox.Models;
 
 namespace Lox.AST
 {

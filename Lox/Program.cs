@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Lox.Models;
 using Lox;
 using System.Text;
 

@@ -1,4 +1,6 @@
-﻿namespace Lox.Parser
+﻿using Lox.Models;
+
+namespace Lox.Parser
 {
     public class ParserState
     {

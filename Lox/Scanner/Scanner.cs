@@ -1,4 +1,5 @@
 ﻿using Lox.Extensions;
+using Lox.Models;
 using System.Globalization;
 
 namespace Lox
@@ -130,7 +131,7 @@ namespace Lox
                     break;
             }
         }
-        public void Identifier() 
+        public void Identifier()
         {
             while (Peek().IsAlphaNumeric())
                 GetNext();
@@ -180,7 +181,7 @@ namespace Lox
             while (isDigit(Peek()))
                 GetNext();
 
-            AddToken(TokenType.NUMBER, Double.Parse(source.substring(start, current), CultureInfo.InvariantCulture));
+            AddToken(TokenType.NUMBER, double.Parse(source.substring(start, current), CultureInfo.InvariantCulture));
         }
 
 

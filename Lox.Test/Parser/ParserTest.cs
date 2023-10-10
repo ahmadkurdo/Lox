@@ -1,4 +1,5 @@
 ﻿using Lox.AST;
+using Lox.Models;
 using Lox.Parser;
 using Lox.Test.TestHelpers;
 
