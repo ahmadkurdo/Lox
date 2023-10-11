@@ -46,20 +46,13 @@ nil; // Represents a value with no content.
 
 The grammar of Lox's expressions is the following:
 ```c#
-expression → literal
-| unary
-| binary
-| grouping;
-
-literal → NUMBER | STRING | "true" | "false" | "nil" ;
-
-grouping → "(" expression ")" ;
-
-unary → ( "-" | "!" ) expression ;
-
-binary → expression operator expression ;
-
-operator → "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
+expression → equality
+equality → comparison (( "!=" | "==" ) comparison)*
+comparison → term (( "<" | ">" | "<=" | ">=" ) term)*
+term → factor (( "+" | "-" ) factor)*
+factor → unary (( "*" | "/" ) unary)*
+unary → ( "!" | "-") unary | primary
+primary → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")"
 ```
 
 ### Arithmetic
