@@ -51,9 +51,40 @@ namespace Lox.Parser
             }
             else
             {
-                Program.Error(Peek().Line, message);
+                throw Error(Peek(), message);
             }
-            return default;
+        }
+
+        public void Synchronize() 
+        {
+            MoveNext();
+
+            while (!IsAtEnd()) 
+            {
+                if (Previous().Type == TokenType.SEMICOLON)
+                    return;
+
+                if (Peek().Type 
+                     is TokenType.CLASS
+                     or TokenType.FUN 
+                     or TokenType.VAR 
+                     or TokenType.FOR 
+                     or TokenType.IF 
+                     or TokenType.WHILE 
+                     or TokenType.PRINT 
+                     or TokenType.RETURN)
+                {
+                    return;
+                }
+                
+                MoveNext();
+            }
+        }
+
+        public ParseError Error(Token token, string message)
+        {
+            Program.Error(token, message);
+            return new ParseError();
         }
     }
 }

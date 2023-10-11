@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Folder Include="Book\" />
+    <Folder Include="Parser\Abstract\" />
   </ItemGroup>
 
 </Project>

@@ -17,8 +17,18 @@ namespace Lox.Parser
         public ParserState State { get; set; }
 
         public Parser(ParserState state) => State = state;
-        
-        public Expr Parse() => Expression();
+
+        public Expr Parse() 
+        {
+            try
+            {
+                return Expression();
+            }
+            catch (ParseError error)
+            {
+                return default;
+            }
+        }
         
         private Expr Expression() =>  Equality();
 
@@ -85,10 +95,12 @@ namespace Lox.Parser
                     return new Grouping(expr);
 
                 default:
-                    Program.Error(State.Previous(), "Expect expression.");
+                    State.Error(State.Previous(), "Expect expression.");
                     return default;
             }
         }
+
+
 
     }
 }
