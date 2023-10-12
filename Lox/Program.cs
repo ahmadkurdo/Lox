@@ -2,6 +2,7 @@
 using Lox.Models;
 using Lox;
 using System.Text;
+using Lox.Parser;
 
 class Program
 {
@@ -30,10 +31,12 @@ class Program
     {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.Scan();
-        foreach (Token token in tokens)
-        {
-            Console.WriteLine(token);
-        }
+
+        var parserState = new ParserState(0, tokens);
+        var parser = new Parser(parserState);
+        var interpreter = new Interperter();
+        var res = interpreter.Eval(parser.Parse());
+        Console.WriteLine(res);
         if (tokens.Any(token => token.Type == TokenType.Error)) 
         {
             var error = tokens.First(toke => toke.Type == TokenType.Error);
