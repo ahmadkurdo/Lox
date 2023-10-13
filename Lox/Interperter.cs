@@ -15,9 +15,22 @@ namespace Lox
                 expr is { Operation.Type: TokenType.STAR } ? (double)left * (double)right :
                 expr is { Operation.Type: TokenType.MINUS } ? (double)left - (double)right :
                 expr is { Operation.Type: TokenType.SLASH } ? (double)left / (double)right :
+                expr is { Operation.Type: TokenType.GREATER } ? (double)left > (double)right :
+                expr is { Operation.Type: TokenType.LESS } ? (double)left < (double)right :
+                expr is { Operation.Type: TokenType.GREATER_EQUAL } ? (double)left >= (double)right :
+                expr is { Operation.Type: TokenType.LESS_EQUAL} ? (double)left <= (double)right :
+                expr is { Operation.Type: TokenType.BANG_EQUAL } ? !IsEqual(left, right) :
+                expr is { Operation.Type: TokenType.EQUAL_EQUAL } ? IsEqual(left, right) :
                 expr is { Operation.Type: TokenType.PLUS } && left.GetType() == typeof(string) && left.GetType() == typeof(string) ? (string)left + (string)right :
                 expr is { Operation.Type: TokenType.PLUS } && left.GetType() == typeof(double) && left.GetType() == typeof(double) ? (double)left + (double)right :
                 default;
+        }
+
+        private bool IsEqual(object left, object right)
+        {
+            return left == null && right == null ? true :
+            left == null ? false : 
+            left.Equals(right);
         }
 
         public object VisitUnaryExpr(Unary expr)
