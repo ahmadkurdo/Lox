@@ -221,6 +221,22 @@ namespace Lox.Test.Interpreter
         }
 
         [TestMethod]
+        public void TestEquality_EQ_EQ_RightSide_NULL_Expression()
+        {
+            var interpreter = new Interperter();
+            var expr = "1 == nil";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            var result = interpreter.Eval(ast);
+
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
         public void TestEquality_NOT_EQ_Expression()
         {
             var interpreter = new Interperter();
@@ -234,6 +250,22 @@ namespace Lox.Test.Interpreter
             var result = interpreter.Eval(ast);
 
             Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void TestEquality_Addition_String_Expression()
+        {
+            var interpreter = new Interperter();
+            var expr = " \"Ahmed\" +  \" \" + \"Rashid\" ";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            var result = interpreter.Eval(ast);
+
+            Assert.AreEqual("Ahmed Rashid", result);
         }
 
     }
