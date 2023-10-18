@@ -2,6 +2,8 @@
 using Lox.AST.Abstract;
 using Lox.Exceptions;
 using Lox.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Lox
 {
@@ -81,5 +83,16 @@ namespace Lox
             throw new RuntimeError(op, "Operand must be a number.");
         }
 
+        public void Interpret(Expr expression) 
+        {
+            try 
+            {
+                object value = Eval(expression);
+                Console.WriteLine(JsonSerializer.Serialize(value));
+            }catch (RuntimeError error) 
+            {
+                Program.RuntimeError(error);
+            }
+        }
     }
 }

@@ -3,10 +3,12 @@ using Lox.Models;
 using Lox;
 using System.Text;
 using Lox.Parser;
+using Lox.Exceptions;
 
 class Program
 {
     private static bool hadError = false;
+    private static bool HadRuntimeError = false;
 
     static void Main(string[] args)
     {
@@ -35,8 +37,8 @@ class Program
         var parserState = new ParserState(0, tokens);
         var parser = new Parser(parserState);
         var interpreter = new Interperter();
-        var res = interpreter.Eval(parser.Parse());
-        Console.WriteLine(res);
+        interpreter.Interpret(parser.Parse());
+
         if (tokens.Any(token => token.Type == TokenType.Error)) 
         {
             var error = tokens.First(toke => toke.Type == TokenType.Error);
@@ -78,6 +80,12 @@ class Program
     {
         Console.Error.WriteLine($"[line {line}] Error{where}: {message}");
         hadError = true;
+    }
+
+    public static void RuntimeError(RuntimeError error)
+    {
+        Console.WriteLine(error.Message + "\n[line " + error.Token.Line + "]");
+        HadRuntimeError = true;
     }
 }
 
