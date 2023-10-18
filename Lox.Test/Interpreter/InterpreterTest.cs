@@ -1,4 +1,5 @@
 ﻿using Lox.AST;
+using Lox.Exceptions;
 using Lox.Models;
 using Lox.Parser;
 
@@ -268,5 +269,100 @@ namespace Lox.Test.Interpreter
             Assert.AreEqual("Ahmed Rashid", result);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestBinary_Plus_ExprWithNonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "10 + \"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestBinary_GT_ExprWithNonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "10 > \"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestBinary_LT_Expr_WithNonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "10 < \"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestBinary_Slash_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "10 / \"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestBinary_Minus_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "10 - \"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(RuntimeError))]
+        public void TestUnary_Minus_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
+        {
+            var interpreter = new Interperter();
+            var expr = "-\"20\"";
+            Scanner scanner = new Scanner(expr);
+            var tokens = scanner.Scan();
+            var state = new ParserState(0, tokens);
+            var parser = new Lox.Parser.Parser(state);
+            var ast = parser.Parse();
+
+            // Act and Assert
+            interpreter.Eval(ast);
+        }
     }
 }
