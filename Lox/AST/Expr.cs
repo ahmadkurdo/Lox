@@ -11,13 +11,6 @@ namespace Lox.AST
         literal → NUMBER | STRING | "true" | "false" | "nul" ;
         array -> "[" literal* "]"
      
-        expression → literal | unary | binary | grouping ;
-        literal → NUMBER | STRING | "true" | "false" | "nil" ;
-        grouping → "(" expression ")" ;
-        unary → ( "-" | "!" ) expression ;
-        binary → expression operator expression ;
-        operator → "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/" ;
-
         expression → equality ;
         equality → comparison ( ( "!=" | "==" ) comparison )* ;
         comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;

@@ -2,6 +2,7 @@
 using Lox.Exceptions;
 using Lox.Models;
 using Lox.Parser;
+using Lox.Test.TestHelpers;
 
 namespace Lox.Test.Interpreter
 {
@@ -161,14 +162,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_GT_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "1 > 2";
+            var expr = "1 > 2;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
             
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(false, result);
         }
@@ -177,14 +178,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_LT_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "1 < 2";
+            var expr = "1 < 2;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
             
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(true, result);
         }
@@ -193,14 +194,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_EQ_EQ_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "1 == 2";
+            var expr = "1 == 2;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
             
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(false, result);
         }
@@ -209,14 +210,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_EQ_EQ_NULL_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "nil == nil";
+            var expr = "nil == nil;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
 
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(true, result);
         }
@@ -225,14 +226,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_EQ_EQ_RightSide_NULL_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "1 == nil";
+            var expr = "1 == nil;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
 
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(false, result);
         }
@@ -241,14 +242,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_NOT_EQ_Expression()
         {
             var interpreter = new Interperter();
-            var expr = "1 != 2";
+            var expr = "1 != 2;";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
             
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual(true, result);
         }
@@ -257,14 +258,14 @@ namespace Lox.Test.Interpreter
         public void TestEquality_Addition_String_Expression()
         {
             var interpreter = new Interperter();
-            var expr = " \"Ahmed\" +  \" \" + \"Rashid\" ";
+            var expr = " \"Ahmed\" +  \" \" + \"Rashid\"; ";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
             var parser = new Lox.Parser.Parser(state);
             var ast = parser.Parse();
 
-            var result = interpreter.Eval(ast);
+            var result = interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
 
             Assert.AreEqual("Ahmed Rashid", result);
         }
@@ -274,7 +275,7 @@ namespace Lox.Test.Interpreter
         public void TestBinary_Plus_ExprWithNonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "10 + \"20\"";
+            var expr = "10 + \"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -282,7 +283,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
 
         [TestMethod]
@@ -290,7 +291,7 @@ namespace Lox.Test.Interpreter
         public void TestBinary_GT_ExprWithNonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "10 > \"20\"";
+            var expr = "10 > \"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -298,7 +299,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
 
         [TestMethod]
@@ -306,7 +307,7 @@ namespace Lox.Test.Interpreter
         public void TestBinary_LT_Expr_WithNonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "10 < \"20\"";
+            var expr = "10 < \"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -314,7 +315,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
 
         [TestMethod]
@@ -322,7 +323,7 @@ namespace Lox.Test.Interpreter
         public void TestBinary_Slash_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "10 / \"20\"";
+            var expr = "10 / \"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -330,7 +331,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
 
         [TestMethod]
@@ -338,7 +339,7 @@ namespace Lox.Test.Interpreter
         public void TestBinary_Minus_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "10 - \"20\"";
+            var expr = "10 - \"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -346,7 +347,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
 
         [TestMethod]
@@ -354,7 +355,7 @@ namespace Lox.Test.Interpreter
         public void TestUnary_Minus_Expr_With_NonNumericRightOperand_Should_Throw_Exception()
         {
             var interpreter = new Interperter();
-            var expr = "-\"20\"";
+            var expr = "-\"20\";";
             Scanner scanner = new Scanner(expr);
             var tokens = scanner.Scan();
             var state = new ParserState(0, tokens);
@@ -362,7 +363,7 @@ namespace Lox.Test.Interpreter
             var ast = parser.Parse();
 
             // Act and Assert
-            interpreter.Eval(ast);
+            interpreter.Eval(ast.First().As(stmt => (ExpressionStmt)stmt).expression);
         }
     }
 }

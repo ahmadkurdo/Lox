@@ -3,12 +3,33 @@ using Lox.AST.Abstract;
 using Lox.Exceptions;
 using Lox.Models;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Lox
 {
-    public class Interperter : IExprVisitor<object>
+    public class Interperter : IExprVisitor<object>, IStmtVisitor
     {
+        public void Interpret(List<Stmt> statements) 
+        {
+            try 
+            {
+                foreach (Stmt stmt in statements) 
+                {
+                    Execute(stmt);
+                }
+            }catch (RuntimeError error) 
+            {
+                Program.RuntimeError(error);
+            }
+        }
+
+        public object Eval(Expr expr) => expr.Accept(this);
+
+        public void Execute(Stmt stmt) => stmt.Accept(this);
+
+        public object VisitGroupingExpr(Grouping expr) => Eval(expr.expr);
+
+        public object VisitLiteralExpr(Literal expr) => expr.Value;
+
         public object VisitBinaryExpr(Binary expr) 
         {
             object left = Eval(expr.Left);
@@ -42,6 +63,14 @@ namespace Lox
                 default;
         }
 
+        public void VisitPrintStmt(PrintStmt printStmt)
+        {
+            object value = Eval(printStmt.expression);
+            Console.WriteLine(JsonSerializer.Serialize(value));
+        }
+
+        public void VisitExpressionStmt(ExpressionStmt expressionStmt) => Eval(expressionStmt.expression);
+
         private bool IsEqual(object left, object right)
         {
             return left == null && right == null ? true :
@@ -64,12 +93,6 @@ namespace Lox
                 default;
         }
 
-        public object VisitGroupingExpr(Grouping expr) => Eval(expr.expr);
-
-        public object VisitLiteralExpr(Literal expr) => expr.Value;
-
-        public object Eval(Expr expr) => expr.Accept(this);
-
         private bool IsTruthy(object obj) => 
             obj == null ? false : 
             obj.GetType() == typeof(bool) ? (bool)obj : 
@@ -82,17 +105,6 @@ namespace Lox
 
             throw new RuntimeError(op, "Operand must be a number.");
         }
-
-        public void Interpret(Expr expression) 
-        {
-            try 
-            {
-                object value = Eval(expression);
-                Console.WriteLine(JsonSerializer.Serialize(value));
-            }catch (RuntimeError error) 
-            {
-                Program.RuntimeError(error);
-            }
-        }
+        
     }
 }
