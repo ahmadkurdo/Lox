@@ -5,6 +5,7 @@ namespace Lox.Parser
 {
     /*
         program → statement* EOF ;
+        declaration → varDecl | statement
         statement → exprStmt | printStmt ;
         exprStmt → expression ";" ;
         printStmt → "print" expression ";" ;
@@ -27,18 +28,11 @@ namespace Lox.Parser
         {
             List<Stmt> statements = new List<Stmt>();
 
-            try
+            while (!State.IsAtEnd())
             {
-                while (!State.IsAtEnd())
-                {
-                    statements.Add(ParseStmt());
-                }
-                return statements;
+                statements.Add(Declaration());
             }
-            catch (ParseError error)
-            {
-                return default;
-            }
+            return statements;
         }
 
         private Expr Expression() => Equality();
@@ -77,7 +71,7 @@ namespace Lox.Parser
             return expr;
         }
 
-        private Stmt ParseStmt() 
+        private Stmt Statement() 
         {
             if (State.CurrentIs(TokenType.PRINT))
             {
@@ -104,6 +98,40 @@ namespace Lox.Parser
             return new ExpressionStmt(value);
         }
 
+        private Stmt Declaration() 
+        {
+            try 
+            {
+                if (State.CurrentIs(TokenType.VAR))
+                {
+                    return VarDeclaration();
+                }
+                else 
+                {
+                    return Statement();
+                }            
+            } catch (ParseError e) 
+            {
+                State.Synchronize();
+                return default;
+            }
+        }
+
+        private Stmt VarDeclaration()
+        {
+            Token name = State.Consume(TokenType.IDENTIFIER, "Expect variable name");
+
+            Expr initializer = null;
+
+            if (State.CurrentIs(TokenType.EQUAL)) 
+            {
+                initializer = Expression();
+            }
+            _ = State.Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+            return new VarStmt(name, initializer);
+        }
+
         private Expr Primary()
         {
             switch (State.Peek().Type)
@@ -126,6 +154,10 @@ namespace Lox.Parser
                     State.MoveNext();
                     return new Literal(State.Previous().Literal);
 
+
+                case TokenType.IDENTIFIER:
+                    return new Var(State.Previous());
+
                 case TokenType.LEFT_PAREN:
                     State.MoveNext();
                     Expr expr = Expression();
@@ -137,8 +169,5 @@ namespace Lox.Parser
                     return default;
             }
         }
-
-
-
     }
 }

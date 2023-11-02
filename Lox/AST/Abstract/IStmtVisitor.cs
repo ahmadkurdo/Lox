@@ -4,5 +4,6 @@
     {
         void VisitPrintStmt(PrintStmt printStmt);
         void VisitExpressionStmt(ExpressionStmt expressionStmt);
+        void VisitVarStmt(VarStmt expressionStmt);
     }
 }

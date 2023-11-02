@@ -43,4 +43,11 @@ namespace Lox.AST
     {
         public override T Accept<T>(IExprVisitor<T> visitor) => visitor.VisitGroupingExpr(this);
     };
+
+    public record Var(Token name) : Expr
+    {
+        public override T Accept<T>(IExprVisitor<T> visitor) => visitor.VisitGroupingExpr(this);
+    };
+
+
 }

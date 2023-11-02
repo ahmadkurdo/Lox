@@ -1,4 +1,5 @@
 ﻿using Lox.AST.Abstract;
+using Lox.Models;
 
 namespace Lox.AST
 {
@@ -29,5 +30,10 @@ namespace Lox.AST
     public record ExpressionStmt(Expr expression) : Stmt 
     {
         public override void Accept(IStmtVisitor visitor) => visitor.VisitExpressionStmt(this);
+    }
+
+    public record VarStmt(Token name, Expr expression) : Stmt
+    {
+        public override void Accept(IStmtVisitor visitor) => visitor.VisitVarStmt(this);
     }
 }

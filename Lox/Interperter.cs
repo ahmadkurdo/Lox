@@ -105,6 +105,10 @@ namespace Lox
 
             throw new RuntimeError(op, "Operand must be a number.");
         }
-        
+
+        public void VisitVarStmt(VarStmt expressionStmt)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

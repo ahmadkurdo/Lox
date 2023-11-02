@@ -6,5 +6,6 @@
         T VisitUnaryExpr(Unary unary);
         T VisitLiteralExpr(Literal binary);
         T VisitGroupingExpr(Grouping binary);
+        T VisitGroupingExpr(Var binary);
     }
 }
